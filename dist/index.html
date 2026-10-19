@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4bd23"><meta name="description" content="Tobin's personal restoration garage: two vintage Ski-Doos, their history, parts, workshop notes and manuals.">
+<title>Tobin’s Ski-Doo Garage</title>
+<link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<aside class="sidebar">
+ <a class="brand" href="#overview" aria-label="Garage overview"><span class="brand-mark">T<span>★</span></span><span>TOBIN’S<br><b>SKI-DOO GARAGE</b></span></a>
+ <div class="side-label">THE RESTORATION ARCHIVE</div>
+ <nav aria-label="Main navigation">
+ <button data-view="overview" class="active"><span>◫</span> Garage overview</button>
+ <button data-view="sleds"><span>◇</span> The sleds <small>02</small></button>
+ <button data-view="parts"><span>⊞</span> Parts & purchases</button>
+ <button data-view="journal"><span>≡</span> Workshop journal</button>
+ <button data-view="archive"><span>▧</span> Photos & manuals</button>
+ </nav>
+ <div class="sidebar-bottom"><div class="garage-tag">EST. 2026 · UPSTATE NEW YORK</div><p>Old sleds.<br>New chapters.</p><div class="save-indicator"><i></i> Saved on this browser</div><button class="text-button" id="backup">Export backup ↗</button><button class="text-button" id="restore">Import backup</button><input type="file" id="restore-file" accept="application/json,.json" hidden><small class="storage-note">Changes stay on this device. Export a backup to move them to another browser.</small></div>
+</aside>
+<div class="main-shell">
+ <header class="topbar"><span>THE GARAGE <b>/</b> <span id="breadcrumb">Overview</span></span><div><span class="owner">JT</span><span>Joshua’s collection</span></div></header>
+ <main id="main" tabindex="-1"></main>
+ <footer><span>TOBIN’S SKI-DOO GARAGE</span><span>Preserving the ride, one part at a time.</span></footer>
+</div>
+<dialog id="editor"><form id="editor-form"><div class="dialog-top"><span class="eyebrow" id="dialog-kind">WORKSHOP</span><button type="button" class="close" aria-label="Close dialog">×</button></div><h2 id="dialog-title"></h2><div id="dialog-fields"></div><div class="dialog-actions"><button type="button" class="button secondary close">Cancel</button><button class="button" type="submit">Save</button></div></form></dialog>
+<dialog id="photo-dialog"><button class="close photo-close" aria-label="Close photo">×</button><img alt=""><p></p></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body></html>
