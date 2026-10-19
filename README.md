@@ -19,4 +19,4 @@ The earlier shopping list's 293 cc, 69 mm 300E piston, 40:1 oil ratio, straight 
 - https://vintagesnow.com/Ski-Doo_files/1960-1965%20Ski-doo%20Parts%20List.pdf
 - https://museebombardier.com/en/services/
 
-Photographs supplied by the owner. The 1968 image is explicitly labeled as a decorative illustration, not a model-specific photograph or an identification reference.
+Photographs supplied by the owner. The 1968 gallery includes the owner-provided porch view, Super Olympique E seat badge, and chassis data plate. Built-in photo updates merge into saved browser data and imported backups without resetting parts, notes, or uploaded images.
