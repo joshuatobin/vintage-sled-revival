@@ -99,3 +99,34 @@ test('failed shared reads never enable editing or replace an existing browser ba
  assert.equal(app.run('canEdit()'),false);assert(app.el('#garage-status').innerHTML.includes('could not be loaded'));
  assert.equal(app.local('tobin-skidoo-garage-v1'),JSON.stringify(legacy));
 });
+
+test('photo selections autosave and update evidence without replacing the focused guide form',async()=>{
+ const app=await boot(null,'#guide'),before=app.el('#main').innerHTML;
+ const form=app.el('#guide-form');form.dataset={guideId:'evidence',guideSled:'early'};
+ form.values={overall:'photo-front',dashboard:'photo-front',enginePhoto:'photo-motor',plateDisposition:''};
+ const target={name:'dashboard',dataset:{},closest:s=>s==='#guide-form'?form:null,matches:s=>s==='[data-guide-field]',removeAttribute(){}};
+ await app.fire('doc:change',{target,type:'change'});
+ assert.equal(app.run("guideRecord('early','evidence').data.dashboard"),'photo-front');
+ assert.equal(app.run("guideRecord('early','evidence').status"),'draft');
+ assert.equal(app.el('#main').innerHTML,before,'typing/selection must not replace the form or lose focus');
+ assert(app.el('[data-guide-preview="dashboard"]').innerHTML.includes('Front hood &amp; windshield'));
+ assert(app.el('#guide-task-progress').innerHTML.includes('3 of 4 findings recorded'));
+ assert.equal(app.run("recordedChassis('early')"),null);
+});
+
+test('the journey can browse locked steps and return to the first prerequisite without changing findings',async()=>{
+ const app=await boot(null,'#guide'),before=app.run('JSON.stringify(state)');
+ const click=async id=>{const button={dataset:{guideStep:id},hasAttribute:n=>n==='data-guide-step',matches:()=>false};await app.fire('doc:click',{target:{closest:()=>button}});};
+ await click('chassis');assert(app.el('#main').innerHTML.includes('A few findings come first.'));
+ assert(app.el('#main').innerHTML.includes('Continue with Photo evidence'));
+ await click('evidence');assert(app.el('#main').innerHTML.includes('id="g-dashboard"'));
+ assert.equal(app.run('JSON.stringify(state)'),before);
+});
+
+test('read-only evidence has usable photo links while form edits remain disabled',async()=>{
+ const app=await boot(null,'#guide',{owner:false}),html=app.el('#main').innerHTML;
+ assert(html.includes('<fieldset disabled>'));
+ assert(html.includes('<a href="#photo-photo-front" class="guide-photo-preview"'));
+ assert(html.includes('You’re viewing Joshua’s restoration record.'));
+ assert(!html.includes('class="guide-step-list"'),'the task should not compete with a second row of step tabs');
+});
