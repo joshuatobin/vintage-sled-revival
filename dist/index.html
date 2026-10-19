@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f4bd23"><meta name="description" content="Tobin's personal restoration garage: two vintage Ski-Doos, their history, parts, workshop notes and manuals.">
 <title>Tobin’s Ski-Doo Garage</title>
-<link rel="stylesheet" href="style.css"><script src="guide.js" defer></script><script src="guide-ui.js" defer></script><script src="app.js" defer></script>
+<link rel="stylesheet" href="style.css"><script src="records.js" defer></script><script src="sync.js" defer></script><script src="guide.js" defer></script><script src="guide-ui.js" defer></script><script src="app.js" defer></script>
 </head>
 <body>
 <aside class="sidebar">
@@ -18,10 +18,11 @@
  <button data-view="journal"><span>≡</span> Workshop journal</button>
  <button data-view="archive"><span>▧</span> Photos & manuals</button>
  </nav>
- <div class="sidebar-bottom"><div class="garage-tag">EST. 2026 · UPSTATE NEW YORK</div><p>Old sleds.<br>New chapters.</p><div class="save-indicator"><i></i> Saved on this browser</div><button class="text-button" id="backup">Export backup ↗</button><button class="text-button" id="restore">Import backup</button><input type="file" id="restore-file" accept="application/json,.json" hidden><small class="storage-note">Changes stay on this device. Export a backup to move them to another browser.</small></div>
+ <div class="sidebar-bottom"><div class="garage-tag">EST. 2026 · UPSTATE NEW YORK</div><p>Old sleds.<br>New chapters.</p><div class="save-indicator"><i></i> <span id="save-status">Loading published progress…</span></div><button class="text-button" id="backup">Export backup ↗</button><button class="text-button" id="restore">Import backup</button><input type="file" id="restore-file" accept="application/json,.json" hidden><small class="storage-note">Anyone can view the published garage. Owner sign-in is required to make changes.</small></div>
 </aside>
 <div class="main-shell">
- <header class="topbar"><span>THE GARAGE <b>/</b> <span id="breadcrumb">Overview</span></span><div><span class="owner">JT</span><span>Joshua’s collection</span></div></header>
+ <header class="topbar"><span>THE GARAGE <b>/</b> <span id="breadcrumb">Overview</span></span><div><span class="owner">JT</span><span>Joshua’s collection</span><div id="auth-controls" class="auth-controls"><span>Public archive</span></div></div></header>
+ <div id="garage-status" class="garage-status" role="status" aria-live="polite"></div>
  <main id="main" tabindex="-1"></main>
  <footer><span>TOBIN’S SKI-DOO GARAGE</span><span>Preserving the ride, one part at a time.</span></footer>
 </div>

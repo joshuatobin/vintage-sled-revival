@@ -1,6 +1,6 @@
 # Tobin's Ski-Doo Garage
 
-Buildless static website. `dist/` is the published directory.
+Buildless frontend in `dist/`, served by a Cloudflare Worker with a public shared garage record and owner-only editing.
 
 Includes two vehicle profiles, a guided restoration workflow, a parts/inspection tracker, actual purchase totals, workshop notes, a photo archive, source manuals and supplier leads.
 
@@ -27,24 +27,32 @@ The guide tracks a restoration process. Factory references and appropriate mecha
 
 ## Run and check
 
-No dependency installation or build is needed. Serve `dist/` using any static web server. With Python installed:
+Install the Worker development tools and start the local app, including its API and isolated local storage:
 
 ```sh
-python3 -m http.server 8000 --directory dist
+npm ci
+npm run cf:dev
 ```
 
-Open `http://localhost:8000`. Node 20 or later runs the checks:
+Open the URL printed by Wrangler (normally `http://localhost:8787`). Local storage is separate from production. Public viewing works immediately; owner editing requires a valid Cloudflare Access login. There is no development authentication bypass. Copy `.dev.vars.example` to the ignored `.dev.vars` only when configuring local verification against your own Access application.
+
+Run the checks with Node 22 or later:
 
 ```sh
 npm test
 npm run check
+npm run cf:check
 ```
 
-`dist/guide.js` contains the pure workflow definitions and validation. `dist/guide-ui.js` renders the walkthrough and handles prompts. `dist/app.js` contains the garage, records, photos and browser persistence. Tests cover workflow dependencies, stale completion, evidence, purchasing requirements, rendering and saved-data migration.
+`npm run test:runtime` also exercises the bundled Worker and SQLite-backed Durable Object in Cloudflare's local runtime, using test-only signing keys and an intercepted test certificate endpoint. It never contacts production or disables production authentication.
+
+A simple Python static server can show the frontend, but has no shared API: it remains read-only and reports that published progress could not be loaded.
+
+`dist/records.js` holds the shared record definitions and validation. `dist/guide.js` contains workflow validation, `dist/guide-ui.js` renders the walkthrough, `dist/app.js` handles the garage UI, and `dist/sync.js` handles authenticated synchronization and recoverable browser drafts. `worker/auth.mjs` verifies login tokens; `worker/garage.mjs` implements the API and durable record. Tests cover authorization, public viewing, photo persistence, conflicts, migrations, workflow dependencies and purchase gates.
 
 ## Cloudflare Workers
 
-`wrangler.jsonc` serves the existing `dist/` folder as a static-assets Worker named `vintage-sled-revival`. There is no application build step or server-side data migration. The existing hash-based navigation works with static asset serving.
+`wrangler.jsonc` serves the existing `dist/` folder and routes `/api/*` and `/admin/*` through `worker/index.mjs`. The Worker is named `vintage-sled-revival`. Its `GARAGE` SQLite-backed Durable Object is provisioned by the tracked `v1-garage` migration. No D1 database ID, R2 bucket, application build, or manual database migration is required. Hash-based navigation and all supplied photos are retained.
 
 Install the deployment tools once, then validate without publishing:
 
@@ -53,7 +61,7 @@ npm ci
 npm run cf:check
 ```
 
-`npm run cf:dev` previews the Worker locally. `npm run cf:deploy` publishes using your Cloudflare CLI login; use it only when ready to deploy. Normal Python previews and the application checks above still need no dependency installation.
+`npm run cf:dev` previews the Worker locally. `npm run cf:deploy` publishes using your Cloudflare CLI login; use it only when ready to deploy. A static-only Python preview stays read-only; use `cf:dev` to exercise the shared API.
 
 For Git-connected deployment, push the configuration and lockfile to GitHub, then choose the repository in Cloudflare **Workers & Pages → Create application → GitHub**. If the repository is missing, open [GitHub installed applications](https://github.com/settings/installations), configure **Cloudflare Workers & Pages** under `joshuatobin`, and add `vintage-sled-revival` to its selected repositories while retaining the existing selections. Refresh the Cloudflare picker afterward. This access is separate from your local `gh` login.
 
@@ -70,15 +78,37 @@ Use these Workers Builds settings:
 
 The Worker name must match `wrangler.jsonc`. The `dist/` asset directory is declared there; no separate build-output setting is needed. Cloudflare's Git integration installs project dependencies before running the commands.
 
-**Move your browser records:** before switching to a Cloudflare URL or custom domain, export a JSON backup from the browser and URL holding your current records. Open the new URL and import that backup. localStorage belongs to each origin, so hosting the same code at a new URL does not transfer parts, notes, guide findings or uploaded photos automatically. Keep the backup until the imported records are verified. The storage key and data format are unchanged.
+## Public viewing and owner sign-in
 
-References: [Workers static assets](https://developers.cloudflare.com/workers/static-assets/), [GitHub repository access](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/), [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+Public visitors can read the published garage, view photos and guides, filter records, and export the public record. They cannot add, edit, delete, import or save findings. The Worker independently rejects unauthorized writes even if someone changes the browser UI or forges an email header.
+
+Configure **one hostname/path-based Cloudflare Access self-hosted application** for the deployed hostname's `/admin/login` path. Keep the rest of the hostname public; do not enable Access for the entire Worker. Use the One-time PIN identity provider and one Allow policy containing only the owner's exact email address. Use an eight-hour session and do not add an Everyone, email-domain, or bypass policy. The owner email is configured in Cloudflare, not committed to this repository.
+
+Set these Worker secrets or environment variables:
+
+| Name | Value |
+| --- | --- |
+| `ACCESS_TEAM_DOMAIN` | Your team origin, such as `https://your-team.cloudflareaccess.com` |
+| `ACCESS_AUD` | The owner-login application's Audience (AUD) tag |
+| `OWNER_EMAIL` | The exact email address allowed to edit |
+
+`keep_vars` preserves dashboard-configured variables on deployment. Cloudflare secrets also persist across deployments. The Worker never grants editing when any authentication setting is absent or invalid.
+
+After Access authenticates `/admin/login`, the Worker verifies the JWT's RS256 signature, issuer, audience, expiration and owner email. It places the verified token in a `Secure`, `HttpOnly`, host-only, `SameSite=Lax` session cookie. The token is never returned to JavaScript or stored in localStorage. Each write revalidates it and requires a same-origin JSON request. Sign-out clears the app cookie and goes through Cloudflare Access logout. Email-code sign-in proves access to the inbox; the app does not accept an unverified email string as identity.
 
 ## Records and backups
 
-Edits persist in browser localStorage under `tobin-skidoo-garage-v1`. JSON export/import carries the full state, including guided findings, blockers, completion records and user-added resized photos. CSV exports the currently filtered parts list. No cross-device synchronization is implied. Updating the code never resets the storage key or existing parts, costs, journal entries or photos.
+Published parts, costs, workshop notes, guide findings and resized uploaded photos are stored together in the shared Durable Object, so visitors and other devices see the same progress on their next page load. API reads are uncached. Published records, including costs and workshop notes, are publicly readable. The current archive limit is 12 MB, including uploaded images. Only the authenticated owner can replace that record.
 
-The repository contains the website source, supplied site photographs, tests and documentation. Browser records are not automatically committed to GitHub. Export a backup to preserve personal restoration records; exported backups and local environment files are ignored by Git.
+Saves use a revision check and an atomic storage transaction. An older session cannot silently replace newer progress. Failed or conflicting writes leave an explicit status and preserve a browser draft when browser capacity permits. Export that draft before reloading when resolving a conflict; network failures also offer a retry. If browser backup storage is full, keep the page open until publishing succeeds or export a backup.
+
+The original localStorage key, `tobin-skidoo-garage-v1`, is preserved untouched. A visitor never loads or publishes that browser-only record. After owner sign-in, use **Review original browser records** to inspect it, then explicitly publish it. Existing purchases in an explicit import remain recorded even while identification is unresolved. New orders still require verified identity and fitment. Unpublished recovery drafts use `tobin-skidoo-garage-draft-v2`; those are removed only after the corresponding record is acknowledged by the server.
+
+For a record held at another origin or in another browser, export its JSON backup there, sign in on the new site, then **Import backup**. The import confirmation explains that this replaces the shared record and makes the imported photos, notes, findings and costs public. Keep the original backup until the published record is verified. JSON retains guides, blockers, completion records, original purchases and user photos. CSV exports the filtered parts list.
+
+The repository contains the supplied photographs and app source, not live restoration data, authentication tokens or exported backups. No existing chassis finding is promoted to a confirmed year by authentication or migration.
+
+References: [Cloudflare Access paths](https://developers.cloudflare.com/workers/configuration/cloudflare-access/), [one-time PIN login](https://developers.cloudflare.com/cloudflare-one/integrations/identity-providers/one-time-pin/), [JWT validation](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/), [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
 ## Identification policy
 
