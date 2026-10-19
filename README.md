@@ -6,14 +6,18 @@ Includes two vehicle profiles, a guided restoration workflow, a parts/inspection
 
 ## Guided restoration
 
-Open **Guided restoration** or use **Continue walkthrough** from the overview. Each sled has its own 19-step record across six stages:
+Open **Guided restoration** or use **Continue walkthrough** from the overview. Each sled has its own 20-step record across six stages:
 
-1. Discovery: evidence photos, chassis identity, installed engine, carburetor, drive/electrical equipment and matching references.
+1. Discovery: a supplied starting file (working year/model and photos), missing photo evidence, chassis year/model verification, installed engine, carburetor, drive/electrical equipment and matching references.
 2. Inspection: condition findings and a disposition for each system's linked parts.
 3. Parts plan: verified part/service specifications, supplier references and quantities.
 4. Repair: completed work and installation records.
 5. Checks & first run: documented service settings, pre-start review and run outcome.
 6. Finish & handoff: finished photos, project summary and maintenance actions.
+
+Step 1 is already recorded from the supplied photos and provisional identity. It is a starting file, not a verified year: the early sled remains “1963?” and the later model is provisional. Existing records gain this starting step without replacing saved findings, parts, purchases, journal entries or photos. Corrections to the working label survive reloads and backup imports.
+
+The walkthrough then shows which identification views are selected or missing, links the applicable factory references, and asks how the chassis was identified, which photo supports it, and what source and reasoning support the conclusion. Chassis confirmation requires the preceding photo evidence. A missing identifier can be documented as missing; it does not become an invented serial number. A saved estimate or unresolved conclusion never unlocks ordering. The parts tracker shows the outstanding discovery requirements, and blocked orders return to the walkthrough with an explanation. Installed engine and component verification plus each part’s specification and supplier link remain required for new orders.
 
 Steps support partial drafts and explicitly recorded blockers. Unknown identity remains open; the site never converts a hypothesis into a confirmed chassis year. Later stages require prior-stage completion. If evidence disappears, an earlier finding is reopened, or a required part returns to an unresolved status, affected completion is recalculated. New order entries require discovery and fitment information; previously recorded purchases are preserved.
 
@@ -37,6 +41,38 @@ npm run check
 ```
 
 `dist/guide.js` contains the pure workflow definitions and validation. `dist/guide-ui.js` renders the walkthrough and handles prompts. `dist/app.js` contains the garage, records, photos and browser persistence. Tests cover workflow dependencies, stale completion, evidence, purchasing requirements, rendering and saved-data migration.
+
+## Cloudflare Workers
+
+`wrangler.jsonc` serves the existing `dist/` folder as a static-assets Worker named `vintage-sled-revival`. There is no application build step or server-side data migration. The existing hash-based navigation works with static asset serving.
+
+Install the deployment tools once, then validate without publishing:
+
+```sh
+npm ci
+npm run cf:check
+```
+
+`npm run cf:dev` previews the Worker locally. `npm run cf:deploy` publishes using your Cloudflare CLI login; use it only when ready to deploy. Normal Python previews and the application checks above still need no dependency installation.
+
+For Git-connected deployment, push the configuration and lockfile to GitHub, then choose the repository in Cloudflare **Workers & Pages → Create application → GitHub**. If the repository is missing, open [GitHub installed applications](https://github.com/settings/installations), configure **Cloudflare Workers & Pages** under `joshuatobin`, and add `vintage-sled-revival` to its selected repositories while retaining the existing selections. Refresh the Cloudflare picker afterward. This access is separate from your local `gh` login.
+
+Use these Workers Builds settings:
+
+| Setting | Value |
+| --- | --- |
+| Worker / project name | `vintage-sled-revival` |
+| Repository | `joshuatobin/vintage-sled-revival` |
+| Production branch | `main` |
+| Root directory | Repository root (leave blank) |
+| Build command | `npm test && npm run check` |
+| Deploy command | `npm run cf:deploy` |
+
+The Worker name must match `wrangler.jsonc`. The `dist/` asset directory is declared there; no separate build-output setting is needed. Cloudflare's Git integration installs project dependencies before running the commands.
+
+**Move your browser records:** before switching to a Cloudflare URL or custom domain, export a JSON backup from the browser and URL holding your current records. Open the new URL and import that backup. localStorage belongs to each origin, so hosting the same code at a new URL does not transfer parts, notes, guide findings or uploaded photos automatically. Keep the backup until the imported records are verified. The storage key and data format are unchanged.
+
+References: [Workers static assets](https://developers.cloudflare.com/workers/static-assets/), [GitHub repository access](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/), [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
 ## Records and backups
 

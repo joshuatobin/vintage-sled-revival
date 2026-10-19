@@ -4,8 +4,16 @@
   "private": true,
   "description": "A guided restoration archive for two vintage Ski-Doos.",
   "scripts": {
+    "cf:dev": "wrangler dev",
+    "cf:check": "wrangler deploy --dry-run",
+    "cf:deploy": "wrangler deploy",
     "test": "node --test tests/*.test.cjs",
     "check": "node --check dist/guide.js && node --check dist/guide-ui.js && node --check dist/app.js"
   },
-  "engines": {"node": ">=20"}
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.2"
+  }
 }

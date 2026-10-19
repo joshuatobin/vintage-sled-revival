@@ -1,0 +1,7 @@
+{
+  "name": "vintage-sled-revival",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./dist"
+  }
+}
