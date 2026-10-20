@@ -47,3 +47,22 @@ Use one progress measure on home: completed guide steps. Parts installation rema
 ## Preserve
 
 Keep the current photos, browser backups, shared data, authentication, guide validation, and purchase gates. The early sled’s chassis year is unconfirmed. Neither a visual refresh nor a working year label changes verification status.
+
+## UI comparison: Showroom and Workbench
+
+The approved navigation rail, mobile navigation, palette and saved records remain the baseline. The next pass explores the main canvas through two Cloudflare version previews on a dedicated UI Worker; production remains on the current homepage while the designs are compared.
+
+Tokens stay workshop paper `#f6f5ef`, sled yellow `#f5bd28`, garage ink `#242822`, field green `#4f6645`, quiet text `#626a5d`, divider `#dedfd6`. Barlow Condensed remains the display face; DM Sans remains the reading and control face. Larger imagery, a deliberate type scale, more breathing room and fewer little boxes should carry the improvement.
+
+```
+Showroom                         Workbench
+intro      two portrait photos   intro / project switcher
+project summaries + next steps  large photo | active project / next action
+tools, explained simply          evidence strip | latest workshop note
+```
+
+Showroom makes the real sleds the memorable element. It combines a photo-led opening with generous project summaries rather than repeating a full photo on every panel. Workbench makes the current project the focus: selecting a sled changes the photograph, next task and supporting evidence together. That selection is interface state only; it never edits the garage.
+
+Review against the brief: a new navigation system or new colors would discard what the user already likes. Repeated small bordered panels would reproduce the current problem. Keep the shared navigation untouched, use the original portrait photographs at useful sizes, retain the plain explanation of the site, and use real findings rather than decorative statistics or invented restoration milestones. Each design must remain usable at phone widths and provide the same routes into the restoration workflow.
+
+UI previews use a dedicated read-only Worker. It fetches only the public published garage snapshot from the existing site and never forwards authentication headers, cookies or writes. No production database binding or owner-login secrets are attached to design previews.

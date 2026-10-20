@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-async function boot(saved,hash='',{owner=true,legacy=null,failRead=false}={}){
+async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false}={}){
  const elements=new Map(),handlers={},values=new Map();let published=saved?JSON.parse(JSON.stringify(saved)):null,revision=saved?1:0,redirect='';
  if(legacy)values.set('tobin-skidoo-garage-v1',JSON.stringify(legacy));
  function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)}});return elements.get(k)}
  const request=async(url,options={})=>{
-  if(url==='/api/session')return Response.json({canEdit:owner,configured:true});
+  if(url==='/api/session')return Response.json({canEdit:owner&&!preview,configured:!preview,preview});
   if(url==='/api/garage'&&options.method==='PUT'){
    if(!owner)return Response.json({error:'Owner sign-in required'},{status:401});
    if(options.headers['If-Match']!==`"${revision}"`)return Response.json({error:'Conflict'},{status:409});
@@ -13,8 +13,8 @@ async function boot(saved,hash='',{owner=true,legacy=null,failRead=false}={}){
   if(failRead)return new Response('Offline',{status:503});
   return Response.json({revision,state:published});
  };
- const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
- for(const name of ['records.js','sync.js','guide.js','guide-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
+ const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview)}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
+ for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
  await context.garageReady;
  return{run:s=>vm.runInContext(s,context),el,storage:()=>JSON.parse(values.get('tobin-skidoo-garage-draft-v2')||'null')?.state||published,local:key=>values.get(key),published:()=>published,redirect:()=>redirect,async fire(key,event){for(const handler of handlers[key]||[])await handler(event)}};
 }
@@ -129,4 +129,23 @@ test('read-only evidence has usable photo links while form edits remain disabled
  assert(html.includes('<a href="#photo-photo-front" class="guide-photo-preview"'));
  assert(html.includes('You’re viewing Joshua’s restoration record.'));
  assert(!html.includes('class="guide-step-list"'),'the task should not compete with a second row of step tabs');
+});
+
+
+test('Showroom uses the same unresolved projects and remains read only in a design preview',async()=>{
+ const app=await boot(null,'',{edition:'showroom',preview:true});
+ assert(app.el('#main').innerHTML.includes('class="ui-showroom"'));
+ assert(app.el('#main').innerHTML.includes('Chassis year unconfirmed'));
+ assert.equal(app.run('canEdit()'),false);
+ const before=app.run('JSON.stringify(state)');app.run("saveGuide();openEditor('photo');persist()");
+ assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);
+ assert(app.el('#auth-controls').innerHTML.includes('Open live garage'));
+});
+
+test('Workbench switching changes the project context without changing or publishing restoration records',async()=>{
+ const app=await boot(null,'',{edition:'workbench',preview:true}),before=app.run('JSON.stringify(state)');
+ const button={dataset:{designSled:'eight'},matches:()=>false,hasAttribute:()=>false};
+ await app.fire('doc:click',{target:{closest:()=>button}});
+ assert.equal(app.run('designActiveSled'),'eight');assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);
+ const html=app.el('#main').innerHTML;assert(html.includes('View Chassis serial plate'));assert(html.includes('data-guide-sled="eight"'));assert(html.includes('1968 restoration file opened'));
 });

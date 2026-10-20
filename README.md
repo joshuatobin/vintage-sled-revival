@@ -132,3 +132,38 @@ The earlier shopping list's 293 cc, 69 mm 300E piston, 40:1 oil ratio, straight 
 - https://museebombardier.com/en/services/
 
 Photographs supplied by the owner. The 1968 gallery includes the owner-provided porch view, Super Olympique E seat badge, and chassis data plate. Built-in photo updates merge into saved browser data and imported backups without resetting parts, notes, or uploaded images.
+
+## Compare UI designs without changing production
+
+The `codex/ui-design-previews` branch adds **Showroom** and **Workbench** as alternative homepages. Navigation, colors, photographs, restoration validation and public/owner access rules stay shared. The production HTML defaults to the approved classic homepage.
+
+- [Showroom preview](https://showroom-vintage-sled-revival-designs.joshuatobin.workers.dev): a photo-led introduction and project stories.
+- [Workbench preview](https://workbench-vintage-sled-revival-designs.joshuatobin.workers.dev): a selected project, its evidence and next action.
+- [Current production](https://vintage-sled-revival.joshuatobin.workers.dev): the unchanged baseline.
+
+Cloudflare version URLs on the separate `vintage-sled-revival-designs` Worker let each design remain available for comparison. This Worker has only a static-assets binding. It reads `/api/garage` from the existing public production endpoint and cannot write records, sign in, or access production storage directly. Request cookies and authorization headers are never forwarded. Preview assets and API responses discourage search indexing.
+
+The preview configuration explicitly enables `global_fetch_strictly_public` so its Worker can fetch the other Worker's public endpoint on Cloudflare's network.
+
+```sh
+# Local snapshots of each design; restart after editing source assets.
+npm run ui:preview -- showroom dev --port 8792
+npm run ui:preview -- workbench dev --port 8793
+
+# Validate without publishing.
+npm run ui:preview -- showroom check
+npm run ui:preview -- workbench check
+
+# One-time creation of the dedicated UI Worker using the current layout.
+npm run ui:preview -- classic initialize
+
+# Upload immutable versions with stable showroom / workbench aliases.
+npm run ui:preview -- showroom publish
+npm run ui:preview -- workbench publish
+```
+
+Publishing requires a Wrangler login with `account:read`, `user:read` and `workers_scripts:write`. General `workers:write` access alone does not authorize the legacy script deployment APIs. The preview script creates temporary static snapshots, sets the chosen edition only in those snapshots, and removes them afterward. It never deploys the production Worker. Running the script without a mode validates a preview instead of uploading it.
+
+Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. Production remains unchanged until a design is chosen. To promote a look, set `data-ui-edition="showroom"` or `data-ui-edition="workbench"` on the production `html` element, without the `data-ui-preview` attribute, and deploy through the normal production workflow. Keep the existing production backend and authentication; the read-only preview Worker is never promoted over it.
+
+This workflow uses Cloudflare’s [version URL and alias mechanism](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) on a dedicated UI Worker. The main Worker exports a Durable Object; Cloudflare does not generate version URLs for Workers that implement one.
