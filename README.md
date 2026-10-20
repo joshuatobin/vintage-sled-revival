@@ -4,6 +4,12 @@ Buildless frontend in `dist/`, served by a Cloudflare Worker with a public share
 
 Includes two vehicle profiles, a guided restoration workflow, a parts/inspection tracker, actual purchase totals, workshop notes, a photo archive, source manuals and supplier leads.
 
+## Homepage
+
+The root URL and existing `#overview` links open **Home**. It introduces Vintage Sled Revival as Joshua’s personal restoration log, shows the two sled projects with their real guide stage and next action, and explains the walkthrough, photos / manuals, parts / costs and workshop journal. Project links open the chosen sled; walkthrough links open that sled’s next available step. The walkthrough includes a Home link, and phone navigation keeps visible text labels. Browser recovery options remain available in an expandable owner notice.
+
+[DESIGN.md](DESIGN.md) records the interface direction and preservation requirements.
+
 ## Guided restoration
 
 Open **Guided restoration** or use **Continue walkthrough** from the overview. Each sled has its own 20-step record across six stages:
