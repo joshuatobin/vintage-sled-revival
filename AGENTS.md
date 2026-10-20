@@ -1,6 +1,6 @@
 # Vintage Sled Revival
 
-Read `README.md` and `DESIGN.md`, then inspect the existing app before changing it. Work in this local checkout. Showroom is the approved production homepage.
+Read `README.md` and `DESIGN.md`, then inspect the existing app before changing it. Work in this local checkout. Showroom is the approved production homepage; Swatchbook is the approved Paint codes & colors layout.
 
 ## Required UI preview workflow
 
