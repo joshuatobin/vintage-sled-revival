@@ -6,7 +6,7 @@ Includes two vehicle profiles, a guided restoration workflow, a parts/inspection
 
 ## Homepage
 
-The root URL and existing `#overview` links open **Home**. It introduces Vintage Sled Revival as Joshua’s personal restoration log, shows the two sled projects with their real guide stage and next action, and explains the walkthrough, photos / manuals, parts / costs and workshop journal. Project links open the chosen sled; walkthrough links open that sled’s next available step. The walkthrough includes a Home link, and phone navigation keeps visible text labels. Browser recovery options remain available in an expandable owner notice.
+The root URL and existing `#overview` links open **Home**, using the approved **Showroom** design. It introduces Vintage Sled Revival as Joshua’s personal restoration log with the two original sled photographs, shows each project's real guide stage and next action, and links photos / manuals, parts / costs and the workshop journal. Project links open the chosen sled; walkthrough links open that sled’s next available step. The walkthrough includes a Home link, and phone navigation keeps visible text labels. Browser recovery options remain available in an expandable owner notice.
 
 [DESIGN.md](DESIGN.md) records the interface direction and preservation requirements.
 
@@ -135,11 +135,11 @@ Photographs supplied by the owner. The 1968 gallery includes the owner-provided 
 
 ## Compare UI designs without changing production
 
-The `codex/ui-design-previews` branch adds **Showroom** and **Workbench** as alternative homepages. Navigation, colors, photographs, restoration validation and public/owner access rules stay shared. The production HTML defaults to the approved classic homepage.
+**Showroom** and **Workbench** are available as comparison homepages. Joshua selected **Showroom** for production. Navigation, colors, photographs, restoration validation and public/owner access rules stay shared. `AGENTS.md` requires at least two published Cloudflare alternatives with clickable links for future UI changes before selecting a direction.
 
 - [Showroom preview](https://showroom-vintage-sled-revival-designs.joshuatobin.workers.dev): a photo-led introduction and project stories.
 - [Workbench preview](https://workbench-vintage-sled-revival-designs.joshuatobin.workers.dev): a selected project, its evidence and next action.
-- [Current production](https://vintage-sled-revival.joshuatobin.workers.dev): the unchanged baseline.
+- [Current production](https://vintage-sled-revival.joshuatobin.workers.dev): the approved Showroom homepage with owner sign-in.
 
 Cloudflare version URLs on the separate `vintage-sled-revival-designs` Worker let each design remain available for comparison. This Worker has only a static-assets binding. It reads `/api/garage` from the existing public production endpoint and cannot write records, sign in, or access production storage directly. Request cookies and authorization headers are never forwarded. Preview assets and API responses discourage search indexing.
 
@@ -164,6 +164,6 @@ npm run ui:preview -- workbench publish
 
 Publishing requires a Wrangler login with `account:read`, `user:read` and `workers_scripts:write`. General `workers:write` access alone does not authorize the legacy script deployment APIs. The preview script creates temporary static snapshots, sets the chosen edition only in those snapshots, and removes them afterward. It never deploys the production Worker. Running the script without a mode validates a preview instead of uploading it.
 
-Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. Production remains unchanged until a design is chosen. To promote a look, set `data-ui-edition="showroom"` or `data-ui-edition="workbench"` on the production `html` element, without the `data-ui-preview` attribute, and deploy through the normal production workflow. Keep the existing production backend and authentication; the read-only preview Worker is never promoted over it.
+Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. Preview uploads leave production unchanged. To promote a chosen look, set `data-ui-edition="showroom"` or `data-ui-edition="workbench"` on the production `html` element, without the `data-ui-preview` attribute, and deploy through the normal production workflow. Showroom is currently selected. Keep the existing production backend and authentication; the read-only preview Worker is never promoted over it.
 
 This workflow uses Cloudflare’s [version URL and alias mechanism](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) on a dedicated UI Worker. The main Worker exports a Durable Object; Cloudflare does not generate version URLs for Workers that implement one.

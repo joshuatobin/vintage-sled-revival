@@ -66,3 +66,7 @@ Showroom makes the real sleds the memorable element. It combines a photo-led ope
 Review against the brief: a new navigation system or new colors would discard what the user already likes. Repeated small bordered panels would reproduce the current problem. Keep the shared navigation untouched, use the original portrait photographs at useful sizes, retain the plain explanation of the site, and use real findings rather than decorative statistics or invented restoration milestones. Each design must remain usable at phone widths and provide the same routes into the restoration workflow.
 
 UI previews use a dedicated read-only Worker. It fetches only the public published garage snapshot from the existing site and never forwards authentication headers, cookies or writes. No production database binding or owner-login secrets are attached to design previews.
+
+## Approved production direction
+
+Joshua selected Showroom on October 19, 2026. Use its photo-led homepage in production, with the existing owner sign-in and shared garage backend. Workbench remains available for comparison. Future UI changes must follow the two-preview workflow in `AGENTS.md`; promoting this already-selected design does not require another comparison round.
