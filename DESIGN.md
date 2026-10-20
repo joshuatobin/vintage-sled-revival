@@ -70,3 +70,22 @@ UI previews use a dedicated read-only Worker. It fetches only the public publish
 ## Approved production direction
 
 Joshua selected Showroom on October 19, 2026. Use its photo-led homepage in production, with the existing owner sign-in and shared garage backend. Workbench remains available for comparison. Future UI changes must follow the two-preview workflow in `AGENTS.md`; promoting this already-selected design does not require another comparison round.
+
+## Paint reference previews
+
+Keep Showroom and the existing palette and typography in both previews. Add a clearly named Paint codes & colors destination. This is a sourced reference library, independent of the saved restoration record: browsing a formula never confirms a chassis, chooses a paint, or unlocks ordering.
+
+Two alternatives:
+
+```
+Swatchbook                       Reference ledger
+explanation | color chips        explanation / evidence key
+year / color / source / search   year / color / source / search
+two-column reference cards       compact comparison table
+expand sources + caveats         expand sources + caveats
+unresolved questions             unresolved questions
+```
+
+Swatchbook uses the vernacular of physical paint samples, with generous cards and small color-family strips. Ledger is for comparing several codes at once, with source type and claimed years visible in rows. Both show actual research, source links, access requirements, and unresolved conflicts. Chips represent color families only; they never simulate a verified paint formula. Use paper, ink, green and yellow from the existing tokens; red `#ae4335` is limited to the red color-family illustration.
+
+Review: a wall of realistic-looking yellow swatches could imply measured color accuracy we do not have. Use one illustrative set of family chips and textual codes instead. The historical chart groups 1964–1970 together, while a public group comment distinguishes 1964 from later yellows. Keep that disagreement visible. Distinguish an archived formula from a member's modern match; nothing in this first research pass confirms a paint for either sled. No member photographs, contact details or full posts are republished.

@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false}={}){
+async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches'}={}){
  const elements=new Map(),handlers={},values=new Map();let published=saved?JSON.parse(JSON.stringify(saved)):null,revision=saved?1:0,redirect='';
  if(legacy)values.set('tobin-skidoo-garage-v1',JSON.stringify(legacy));
  function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)}});return elements.get(k)}
@@ -13,8 +13,8 @@ async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition
   if(failRead)return new Response('Offline',{status:503});
   return Response.json({revision,state:published});
  };
- const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview)}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
- for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
+ const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview),paintEdition}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
+ for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','paint-data.js','paint-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
  await context.garageReady;
  return{run:s=>vm.runInContext(s,context),el,storage:()=>JSON.parse(values.get('tobin-skidoo-garage-draft-v2')||'null')?.state||published,local:key=>values.get(key),published:()=>published,redirect:()=>redirect,async fire(key,event){for(const handler of handlers[key]||[])await handler(event)}};
 }
@@ -148,4 +148,17 @@ test('Workbench switching changes the project context without changing or publis
  await app.fire('doc:click',{target:{closest:()=>button}});
  assert.equal(app.run('designActiveSled'),'eight');assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);
  const html=app.el('#main').innerHTML;assert(html.includes('View Chassis serial plate'));assert(html.includes('data-guide-sled="eight"'));assert(html.includes('1968 restoration file opened'));
+});
+
+test('both paint layouts render sources and filters without changing garage or browser records',async()=>{
+ for(const paintEdition of ['swatches','ledger']){
+  const app=await boot(null,'#paint',{edition:'showroom',preview:true,paintEdition}),before=app.run('JSON.stringify(state)');
+  const html=app.el('#main').innerHTML;assert(html.includes('Paint codes & colors.'));assert(html.includes('Your early sled’s year is still unconfirmed.'));assert(html.includes('RH-CG498 E'));assert(html.includes('Private group · membership required'));
+  assert.equal(app.run('currentView'),'paint');assert.equal(app.run('canEdit()'),false);
+  await app.fire('doc:input',{target:{id:'paint-search',value:'RH-CG498'}});
+  assert(app.el('#paint-results').innerHTML.includes('RH-CG498 E'));assert(!app.el('#paint-results').innerHTML.includes('S2-0212.0'));
+  await app.fire('doc:change',{target:{id:'paint-year',value:'1964',dataset:{}}});
+  assert(app.el('#paint-results').innerHTML.includes('No references match yet.'));
+  assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);assert.equal(app.local('tobin-skidoo-garage-v1'),undefined);
+ }
 });

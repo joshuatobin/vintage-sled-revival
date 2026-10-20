@@ -167,3 +167,16 @@ Publishing requires a Wrangler login with `account:read`, `user:read` and `worke
 Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. Preview uploads leave production unchanged. To promote a chosen look, set `data-ui-edition="showroom"` or `data-ui-edition="workbench"` on the production `html` element, without the `data-ui-preview` attribute, and deploy through the normal production workflow. Showroom is currently selected. Keep the existing production backend and authentication; the read-only preview Worker is never promoted over it.
 
 This workflow uses Cloudflare’s [version URL and alias mechanism](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) on a dedicated UI Worker. The main Worker exports a Durable Object; Cloudflare does not generate version URLs for Workers that implement one.
+
+## Paint codes & colors · design previews
+
+The paint-reference feature is being compared in two previews, both keeping the approved Showroom homepage:
+
+- [Swatchbook](https://paint-swatches-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): browse reference cards and expand their evidence.
+- [Reference Ledger](https://paint-ledger-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): compare claimed years, brands and codes in a table.
+
+Publish with `npm run ui:preview -- paint-swatches publish` and `npm run ui:preview -- paint-ledger publish`; replace `publish` with `dev --port 8792` or `check` for local review or validation. These editions set `data-paint-edition` in temporary preview assets and leave production on Showroom. The paint feature has not been promoted to production.
+
+`dist/paint-data.js` contains nine sourced starter references; `dist/paint-ui.js` and `dist/paint.css` render the section at `#paint`. Filter by text, claimed year, color family and evidence type. These are curated references independent of saved garage records. No browser drafts, photos, guide findings or purchase gates are changed. The library distinguishes archived formulas from community or compiled leads, retains source access labels, and shows the unresolved 1964 yellow disagreement and missing gray code. No formula is a verified choice for either sled.
+
+[Research notes](research/paint-references.md) record the inspected sources and remaining questions. Original Facebook photographs stay at their source; the library includes short technical summaries and links. Future entries should preserve this evidence structure.

@@ -8,7 +8,7 @@
     "cf:check": "wrangler deploy --dry-run",
     "cf:deploy": "wrangler deploy",
     "test": "node --test tests/*.test.cjs",
-    "check": "node --check dist/records.js && node --check dist/sync.js && node --check dist/guide.js && node --check dist/guide-ui.js && node --check dist/app.js && node --check worker/auth.mjs && node --check worker/index.mjs && node --check worker/garage.mjs && node --check dist/home-designs.js && node --check worker/ui-preview.mjs && node --check scripts/ui-preview.mjs",
+    "check": "node --check dist/records.js && node --check dist/sync.js && node --check dist/guide.js && node --check dist/guide-ui.js && node --check dist/app.js && node --check worker/auth.mjs && node --check worker/index.mjs && node --check worker/garage.mjs && node --check dist/home-designs.js && node --check dist/paint-data.js && node --check dist/paint-ui.js && node --check worker/ui-preview.mjs && node --check scripts/ui-preview.mjs",
     "test:runtime": "node tests/runtime.integration.mjs",
     "ui:preview": "node scripts/ui-preview.mjs"
   },
