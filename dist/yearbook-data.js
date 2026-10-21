@@ -4,6 +4,7 @@ const SledYearbook=(()=>{
  const specifications='https://www.trailz.net/pub/Snowmobiles/SKIDOO/1996-1997/1997/MSPE_A97.PDF';
  const museum='https://museebombardier.com/services/';
  const colors={early:{name:'Early Ski-Doo yellow',hex:'#dfb12f',code:'1960–1963 R.M. TE-series recipe',page:4},later:{name:'Ski-Doo yellow',hex:'#e5b52f',code:'1964–1970 R.M. TE-series recipe',page:4},seventies:{name:'Ski-Doo yellow',hex:'#e6bb32',code:'1971–1979 R.M. TE-series recipe',page:4}};
+ const brochures={"1960":"Brochure_vente_Ski_Doo_K60_1960_fr.pdf","1961":"Brochure_vente_Ski_Doo_K61_1961_fr.pdf","1962":"Brochure_vente_Ski_Doo_A62_K62_J62_1962_ang.pdf","1963":"Brochure_vente_Ski_Doo_R6_R8_RD8_1963_fr.pdf","1964":"Brochure_vente_Ski_Doo_BB64_BR64_RD64_1964_fr.pdf","1965":"Brochure_vente_Ski_Doo_Alpine_Chalet_Olympique_1965_fr.pdf","1966":"Brochure_vente_Ski_Doo_Alpine_Olympique_1966_fr.pdf","1967":"Brochure_vente_Ski_Doo_Chalet_Olympique_1967_fr.pdf","1968":"Brochure_vente_Ski_Doo_Alpine_Olympique_1968_fr.pdf","1969":"Brochure_vente_Ski_Doo_Alpine_Olympic_Nordic_TNT_1969_fr.pdf"};
  const rows=[
   [1959,'Ski-Doo','First production years','tin','early',''],
   [1960,'K60','K60','tin','early',''],[1961,'K61','K61','tin','early',''],[1962,'K62','K62','tin','early',''],
@@ -22,6 +23,7 @@ const SledYearbook=(()=>{
   return {year,model,modelCode,family,paint,assignmentPage:assignmentPage||null,documentedHood:!!assignmentPage,
    note:assignmentPage?'The chart assigns this hood code to the named model. The drawing and screen shade remain illustrative.':year===1964?'The chart groups 1964–1970; community evidence disputes the 1964 shade. Paint assignment to this model needs checking.':year>=1971?'The general 1971–1979 yellow recipe does not establish the hood finish of this Olympique model.':'A historical year-range recipe accompanies this representative model. Exact component fitment remains unchecked.',
    sources:[{label:year===1959?'Museum · first Ski-Doo sales register':'Bombardier model identification',url:year===1959?'https://museebombardier.com/en/artefacts/ski-doo-sales-register/':specifications+'#page='+(year<=1969?18:year<=1971?17:year===1972?16:year<=1976?15:year<=1979?14:year<=1983?13:year<=1987?12:11)},
+    ...(brochures[year]?[{label:`Original ${year} sales brochure (${year===1962?'English':'French'})`,url:'https://museebombardier.com/wp-content/uploads/2020/04/'+brochures[year]}]:[]),
     {label:assignmentPage?'Model → hood-code chart':'Historical color recipe',url:chart+'#page='+(assignmentPage||4)},
     ...(assignmentPage?[{label:'Paint-code color name',url:chart+'#page='+paint.page}]:[]),...(year===1964?[{label:'1964 shade disagreement',url:'https://www.facebook.com/groups/778144523424225/posts/1783561909549143/?comment_id=1783640022874665'}]:[])]};
  });

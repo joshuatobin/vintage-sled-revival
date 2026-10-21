@@ -22,6 +22,8 @@ The UI’s hex colors are illustrative choices, not measured readings or convers
 
 ## Revised scope and images
 
+On October 21, 2026, the museum's [technical publication index](https://museebombardier.com/services/) supplied a direct original sales-brochure PDF for each year 1960–1969. All ten endpoints returned successful PDF responses. Each year sheet now links its corresponding document, with language labeled (English for 1962; French for the other nine). These are period appearance references, not measurements of paint colors, confirmation of Joshua's chassis, or proof that every model in a year shared one finish. No brochure images are republished. Years without an established brochure link do not receive a guessed substitute.
+
 Joshua limited the range to 1959–1979 and rejected the schematic artwork. All sled drawings and infographic downloads have been removed; no 1980s/1990s model entries remain. The period brochures remain source references, not republished images. No replacement photograph is assigned to a year without evidence for that year/model. The owner’s original photos remain in their existing project records.
 
 Selecting a year or decade changes only interface state; neither the shared garage nor browser recovery records is written. These references must never confirm the early sled’s chassis year.
