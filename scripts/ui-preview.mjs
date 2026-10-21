@@ -5,14 +5,14 @@ import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const [edition='showroom',mode='check',...extra]=process.argv.slice(2);
-if(!['classic','showroom','workbench','paint-swatches','paint-ledger'].includes(edition)||!['publish','initialize','dev','check'].includes(mode))throw Error('Use: node scripts/ui-preview.mjs <classic|showroom|workbench|paint-swatches|paint-ledger> <publish|initialize|dev|check>');
+if(!['classic','showroom','workbench','paint-swatches','paint-ledger','paint-yearbook','paint-gallery'].includes(edition)||!['publish','initialize','dev','check'].includes(mode))throw Error('Use: node scripts/ui-preview.mjs <classic|showroom|workbench|paint-swatches|paint-ledger|paint-yearbook|paint-gallery> <publish|initialize|dev|check>');
 if(mode==='initialize'&&edition!=='classic')throw Error('Initialize the design Worker with the classic baseline before uploading variants.');
 const stage=await mkdtemp(join(tmpdir(),'vintage-ui-'+edition+'-'));
 try{
  await cp(join(root,'dist'),join(stage,'dist'),{recursive:true});
  const entry=join(stage,'dist','index.html');
- const paintStudy=edition.startsWith('paint-'),homeEdition=paintStudy?'showroom':edition,paintEdition=edition==='paint-ledger'?'ledger':'swatches';
- await writeFile(entry,(await readFile(entry,'utf8')).replace(/<html\b[^>]*>/,tag=>tag.replace(/ data-(?:ui-(?:edition|preview)|paint-edition)="[^"]*"/g,'').replace(/>$/,` data-ui-edition="${homeEdition}" data-ui-preview="true" data-paint-edition="${paintEdition}">`)));
+ const paintStudy=edition.startsWith('paint-'),homeEdition=paintStudy?'showroom':edition,paintEdition=edition==='paint-ledger'?'ledger':'swatches',yearbookEdition=edition==='paint-yearbook'?'sheets':edition==='paint-gallery'?'gallery':'';
+ await writeFile(entry,(await readFile(entry,'utf8')).replace(/<html\b[^>]*>/,tag=>tag.replace(/ data-(?:ui-(?:edition|preview)|paint-edition|yearbook-edition)="[^"]*"/g,'').replace(/>$/,` data-ui-edition="${homeEdition}" data-ui-preview="true" data-paint-edition="${paintEdition}" data-yearbook-edition="${yearbookEdition}">`)));
  const headersPath=join(stage,'dist','_headers');await writeFile(headersPath,(await readFile(headersPath,'utf8')).trimEnd()+'\n  X-Robots-Tag: noindex, nofollow\n');
  const config={name:'vintage-sled-revival-designs',main:join(root,'worker','ui-preview.mjs'),compatibility_date:'2026-10-19',compatibility_flags:['global_fetch_strictly_public'],preview_urls:true,workers_dev:true,assets:{directory:join(stage,'dist'),binding:'ASSETS',run_worker_first:['/api/*','/admin/*']}};
  const configPath=join(stage,'wrangler.json');await writeFile(configPath,JSON.stringify(config,null,2));

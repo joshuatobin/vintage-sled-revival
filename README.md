@@ -180,3 +180,14 @@ Publish previews with `npm run ui:preview -- paint-swatches publish` and `npm ru
 `dist/paint-data.js` contains nine sourced starter references; `dist/paint-ui.js` and `dist/paint.css` render the section at `#paint`. Filter by text, claimed year, color family and evidence type. These are curated references independent of saved garage records. No browser drafts, photos, guide findings or purchase gates are changed. The library distinguishes archived formulas from community or compiled leads, retains source access labels, and shows the unresolved 1964 yellow disagreement and missing gray code. No formula is a verified choice for either sled.
 
 [Research notes](research/paint-references.md) record the inspected sources and remaining questions. Original Facebook photographs stay at their source; the library includes short technical summaries and links. Future entries should preserve this evidence structure.
+
+## Early-year paint references · design previews
+
+The year browser covers **1959–1979** only. Joshua rejected the schematic sled artwork; the drawings and infographic downloads have been removed. Years retain their swatch, representative model reference, historical recipe, sources and unresolved paint assignments. No substitute sled photographs are presented as verified year/model examples.
+
+- [Year sheets](https://paint-yearbook-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): one year at a time with a larger swatch and its references.
+- [Year gallery](https://paint-gallery-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): compact year cards with 1950s, 1960s and 1970s filters; open a card for its references.
+
+Publish with `npm run ui:preview -- paint-yearbook publish` or `npm run ui:preview -- paint-gallery publish`; `check` validates, and `dev --port 8792` or `dev --port 8793` starts a local snapshot. Production does not enable these additions while alternatives are compared. To promote a selected version, set `data-yearbook-edition="sheets"` or `data-yearbook-edition="gallery"` on the production HTML element without a preview flag.
+
+`dist/yearbook-data.js` records the source-linked early-year references; `dist/yearbook-ui.js` and `dist/yearbook.css` provide the browsing interface. Selecting a year or decade does not edit garage records. Display colors are approximate, not measured paint matches or mixing formulas. The historical recipe ranges do not prove paint assignment to the representative model; 1964 remains disputed. [Research notes](research/yearbook-references.md) record the source pages and limits.

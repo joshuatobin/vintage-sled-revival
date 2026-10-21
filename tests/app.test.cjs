@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches'}={}){
+async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches',yearbookEdition=''}={}){
  const elements=new Map(),handlers={},values=new Map();let published=saved?JSON.parse(JSON.stringify(saved)):null,revision=saved?1:0,redirect='';
  if(legacy)values.set('tobin-skidoo-garage-v1',JSON.stringify(legacy));
  function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)}});return elements.get(k)}
@@ -13,8 +13,8 @@ async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition
   if(failRead)return new Response('Offline',{status:503});
   return Response.json({revision,state:published});
  };
- const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview),paintEdition}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
- for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','paint-data.js','paint-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
+ const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview),paintEdition,yearbookEdition}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
+ for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','paint-data.js','yearbook-data.js','yearbook-ui.js','paint-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
  await context.garageReady;
  return{run:s=>vm.runInContext(s,context),el,storage:()=>JSON.parse(values.get('tobin-skidoo-garage-draft-v2')||'null')?.state||published,local:key=>values.get(key),published:()=>published,redirect:()=>redirect,async fire(key,event){for(const handler of handlers[key]||[])await handler(event)}};
 }
@@ -160,5 +160,19 @@ test('both paint layouts render sources and filters without changing garage or b
   await app.fire('doc:change',{target:{id:'paint-year',value:'1964',dataset:{}}});
   assert(app.el('#paint-results').innerHTML.includes('No references match yet.'));
   assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);assert.equal(app.local('tobin-skidoo-garage-v1'),undefined);
+ }
+});
+
+test('early-year references exclude rejected artwork and later decades without editing restoration records',async()=>{
+ const live=await boot(null,'#paint',{edition:'showroom'});assert(!live.el('#main').innerHTML.includes('id="yearbook-stage"'));
+ for(const yearbookEdition of ['sheets','gallery']){
+  const app=await boot(null,'#paint',{edition:'showroom',preview:true,yearbookEdition}),before=app.run('JSON.stringify(state)');
+  let html=app.el('#main').innerHTML;
+  assert(html.includes('1959–1979'));assert(!html.includes('1980s'));assert(!html.includes('1990s'));assert(!html.includes('Download this infographic'));assert(!html.includes('model-family schematic'));
+  await app.fire('doc:change',{target:{id:'yearbook-year',value:'1979',dataset:{}}});
+  assert.equal(app.run('yearbookActive().year'),1979);assert(app.el('#main').innerHTML.includes('1971–1979 R.M. TE-series recipe'));
+  await app.fire('doc:change',{target:{id:'yearbook-year',value:'1980',dataset:{}}});assert.equal(app.run('yearbookYear'),1979);
+  if(yearbookEdition==='gallery'){const button={dataset:{yearbookYear:'1964'},hasAttribute:()=>false,matches:()=>false};await app.fire('doc:click',{target:{closest:()=>button}});assert.equal(app.el('#yearbook-dialog').open,true);assert(app.el('#yearbook-dialog').innerHTML.includes('Year-range conflict'));}
+  assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);assert.equal(app.run("recordedChassis('early')"),null);
  }
 });

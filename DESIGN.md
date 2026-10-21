@@ -91,3 +91,11 @@ Swatchbook uses the vernacular of physical paint samples, with generous cards an
 Review: a wall of realistic-looking yellow swatches could imply measured color accuracy we do not have. Use one illustrative set of family chips and textual codes instead. The historical chart groups 1964–1970 together, while a public group comment distinguishes 1964 from later yellows. Keep that disagreement visible. Distinguish an archived formula from a member's modern match; nothing in this first research pass confirms a paint for either sled. No member photographs, contact details or full posts are republished.
 
 Joshua selected Swatchbook for production on October 19, 2026. Promote that layout at `#paint`, retaining Showroom on Home and the existing production data and authentication. The two paint previews remain available for reference.
+
+## Early-year paint references
+
+Joshua rejected the schematic sled illustrations: they did not resemble the original machines closely enough. Remove the drawings and their infographic downloads. Limit the range to the 1950s, 1960s and 1970s: 1959–1979. Do not use a generic or unchecked photograph as a substitute for an actual year/model example.
+
+Retain the approved Showroom homepage, Swatchbook library, navigation, Barlow Condensed / DM Sans typography and yellow, olive, ink and paper palette. The additional content is a paint reference browser with illustrative swatches, model references, historical recipes and source links. Open paint-assignment questions and the 1964 disagreement stay visible. No project identity or saved progress changes.
+
+Keep two alternatives on the dedicated preview Worker: **Year sheets** pairs one year with a larger swatch and sources; **Year gallery** shows compact swatch cards with 1950s/1960s/1970s filters and a detail dialog. The gallery fits the approved Swatchbook direction best. Actual photographs can be added later when their model, year and provenance are established; never recolor a documentary photograph to imply a verified paint match.
