@@ -200,6 +200,8 @@ Every 1960–1969 year sheet also links its original factory sales brochure in t
 
 The [live Sno-Jet System Checklist](https://vintage-sled-revival.joshuatobin.workers.dev/#snojet) has its own navigation entry. Search for parts or numbers, filter by system or status, and expand each row for fitment checks and supplier links. The owner can update each part's status.
 
+The original 1974 Astro Jet factory parts manual is the first link under **Manuals and application charts**. [Free PDF at Vintage Snow](https://vintagesnow.com/Sno-Jet_files/74astrojet%20Parts%20Manual.pdf)
+
 - [Workshop Plan](https://snojet-plan-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) groups systems by first start and before riding.
 - [Parts Catalog](https://snojet-catalog-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) lays out parts and supplier links in rows with a system filter.
 

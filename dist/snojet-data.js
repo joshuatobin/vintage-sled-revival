@@ -78,9 +78,9 @@ const SnoJetParts = (() => {
   },
  ];
  const references = [
+  reference('1974 Sno-Jet Astro Jet factory parts manual (free PDF)', 'https://vintagesnow.com/Sno-Jet_files/74astrojet%20Parts%20Manual.pdf'),
   beltChart, carbChart,
   reference('Sno-Jet model-number key (1975 book with 1974 decoding)', 'https://vintagesnow.com/Sno-Jet_files/1975_SST_Astro.pdf'),
-  catalog('1974–1976 Astro Jet parts books (paid reproduction)', 'https://www.etsy.com/listing/944054571/snojet-astrojet-1974-1975-1976'),
   catalog('1974 Sno-Jet engine manual (paid copy)', 'https://www.emanualonline.com/powersports/snowmobiles/sno-jet/1974-sno-jet-snojet-snowmobile-engine-manual-emo-85709'),
  ];
  return {systems, references};
