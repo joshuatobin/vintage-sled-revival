@@ -6,7 +6,7 @@ Includes two vehicle profiles, a guided restoration workflow, a parts/inspection
 
 ## Homepage
 
-The root URL and existing `#overview` links open **Home**, using the approved **Showroom** design. It introduces Vintage Sled Revival as Joshua’s personal restoration log with the two original sled photographs, shows each project's real guide stage and next action, and links photos / manuals, parts / costs and the workshop journal. Project links open the chosen sled; walkthrough links open that sled’s next available step. The walkthrough includes a Home link, and phone navigation keeps visible text labels. Browser recovery options remain available in an expandable owner notice.
+The root URL and existing `#overview` links open **Open Bays**. The homepage puts the two Ski-Doo restorations and the Sno-Jet parts project in separate sections with photos and direct links. Project files open the chosen Ski-Doo. Walkthrough links open that sled’s next available step. The Sno-Jet opens its own System Checklist. The paint archive and shared navigation remain available from home.
 
 [DESIGN.md](DESIGN.md) records the interface direction and preservation requirements.
 
@@ -135,11 +135,11 @@ Photographs supplied by the owner. The 1968 gallery includes the owner-provided 
 
 ## Compare UI designs without changing production
 
-**Showroom** and **Workbench** are available as comparison homepages. Joshua selected **Showroom** for production. Navigation, colors, photographs, restoration validation and public/owner access rules stay shared. `AGENTS.md` requires at least two published Cloudflare alternatives with clickable links for future UI changes before selecting a direction.
+**Showroom** and **Workbench** are available as historical comparison homepages. Navigation, colors, photographs, restoration validation and public/owner access rules stay shared. `AGENTS.md` requires at least two published Cloudflare alternatives with clickable links for future UI changes before selecting a direction.
 
 - [Showroom preview](https://showroom-vintage-sled-revival-designs.joshuatobin.workers.dev): a photo-led introduction and project stories.
 - [Workbench preview](https://workbench-vintage-sled-revival-designs.joshuatobin.workers.dev): a selected project, its evidence and next action.
-- [Current production](https://vintage-sled-revival.joshuatobin.workers.dev): the approved Showroom homepage with owner sign-in.
+- [Current production](https://vintage-sled-revival.joshuatobin.workers.dev): the approved Open Bays homepage with owner sign-in.
 
 Cloudflare version URLs on the separate `vintage-sled-revival-designs` Worker let each design remain available for comparison. This Worker has only a static-assets binding. It reads `/api/garage` from the existing public production endpoint and cannot write records, sign in, or access production storage directly. Request cookies and authorization headers are never forwarded. Preview assets and API responses discourage search indexing.
 
@@ -164,13 +164,13 @@ npm run ui:preview -- workbench publish
 
 Publishing requires a Wrangler login with `account:read`, `user:read` and `workers_scripts:write`. General `workers:write` access alone does not authorize the legacy script deployment APIs. The preview script creates temporary static snapshots, sets the chosen edition only in those snapshots, and removes them afterward. It never deploys the production Worker. Running the script without a mode validates a preview instead of uploading it.
 
-Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. Preview uploads leave production unchanged. To promote a chosen look, set `data-ui-edition="showroom"` or `data-ui-edition="workbench"` on the production `html` element, without the `data-ui-preview` attribute, and deploy through the normal production workflow. Showroom is currently selected. Keep the existing production backend and authentication; the read-only preview Worker is never promoted over it.
+Each upload returns an immutable version URL and a stable alias URL. The stable alias moves forward when that design is uploaded again. To promote a chosen look, set its `data-ui-edition` on the production `html` element, omit `data-ui-preview`, and deploy through the normal production workflow. The selected edition is `open-bays`. Deploy with the production Worker configuration to use the existing backend and authentication.
 
 This workflow uses Cloudflare’s [version URL and alias mechanism](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) on a dedicated UI Worker. The main Worker exports a Durable Object; Cloudflare does not generate version URLs for Workers that implement one.
 
 ## Paint codes & colors
 
-The approved **Swatchbook** paint-reference section is live at [Paint codes & colors](https://vintage-sled-revival.joshuatobin.workers.dev/#paint), alongside the Showroom homepage. The two comparison previews remain available:
+The approved **Swatchbook** paint-reference section is live at [Paint codes & colors](https://vintage-sled-revival.joshuatobin.workers.dev/#paint). The two comparison previews remain available:
 
 - [Swatchbook](https://paint-swatches-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): browse reference cards and expand their evidence.
 - [Reference Ledger](https://paint-ledger-vintage-sled-revival-designs.joshuatobin.workers.dev/#paint): compare claimed years, brands and codes in a table.
@@ -183,7 +183,7 @@ Publish previews with `npm run ui:preview -- paint-swatches publish` and `npm ru
 
 ## Early-year paint references
 
-Joshua selected **Year Sheets** for production on October 21, 2026. The approved year browser is part of [Paint codes & colors](https://vintage-sled-revival.joshuatobin.workers.dev/#paint), alongside the existing Swatchbook references and Showroom homepage. The comparison previews remain available below.
+Joshua selected **Year Sheets** for production on October 21, 2026. The approved year browser is part of [Paint codes & colors](https://vintage-sled-revival.joshuatobin.workers.dev/#paint), alongside the existing Swatchbook references. The comparison previews remain available below.
 
 The year browser covers **1959–1979** only. Joshua rejected the schematic sled artwork; the drawings and infographic downloads have been removed. Years retain their swatch, representative model reference, historical recipe, sources and unresolved paint assignments. No substitute sled photographs are presented as verified year/model examples.
 
@@ -198,11 +198,34 @@ Every 1960–1969 year sheet also links its original factory sales brochure in t
 
 ## 1974 Sno-Jet Astro Jet 340
 
-The [live Sno-Jet Workshop Plan](https://vintage-sled-revival.joshuatobin.workers.dev/#snojet) has its own navigation entry. Search for parts or numbers, filter by system, or browse the plan in order. Product listings and catalogs provide purchase leads, with a fitment check beside each entry. The two read-only previews share the same data.
+The [live Sno-Jet System Checklist](https://vintage-sled-revival.joshuatobin.workers.dev/#snojet) has its own navigation entry. Search for parts or numbers, filter by system or status, and expand each row for fitment checks and supplier links. The owner can update each part's status.
 
 - [Workshop Plan](https://snojet-plan-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) groups systems by first start and before riding.
 - [Parts Catalog](https://snojet-catalog-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) lays out parts and supplier links in rows with a system filter.
 
-The working identification is Astro Jet 340 with a Yamaha twin. Joshua confirmed the installed Tillotson HD-14A and opted for a DIY rebuild. The factory parts diagram and DI 23398 kit are linked beside the carb. The exact engine tag, stator and clutch setup remain fitment checks. The chassis plate shows a 1973 build date and a faint model code. Use the model code to check the model year. The section is a separate parts reference and uses no purchase tracker or garage storage.
+The working identification is Astro Jet 340 with a Yamaha twin. Joshua confirmed the installed Tillotson HD-14A and opted for a DIY rebuild. The factory parts diagram and DI 23398 kit are linked beside the carb. The exact engine tag, stator and clutch setup remain fitment checks. The chassis plate shows a 1973 build date and a faint model code. Use the model code to check the model year. Sno-Jet statuses are stored separately from the Ski-Doo purchasing workflow.
 
-Run `npm run ui:preview -- snojet-plan dev --port 8794` locally, or use `snojet-catalog` for the other layout. The same editions support `check` and `publish`. The production HTML uses `data-snojet-edition="plan"`.
+Run `npm run ui:preview -- snojet-plan dev --port 8794` locally, or use `snojet-catalog` for the other layout. The same editions support `check` and `publish`. The production HTML uses `data-snojet-edition="checklist"`.
+
+## Garage homepage and Sno-Jet checklist previews
+
+Each homepage gives the Ski-Doos and Sno-Jet their own entrances and links to the paint archive. Open the home and checklist links to compare both parts of a preview.
+
+| Homepage | Sno-Jet parts |
+| --- | --- |
+| [Garage Doors](https://garage-doors-vintage-sled-revival-designs.joshuatobin.workers.dev/) shows two large entrances with project links already visible. | [System Checklist](https://garage-doors-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) groups parts by assembly. |
+| [Project Index](https://project-index-vintage-sled-revival-designs.joshuatobin.workers.dev/) shows photo thumbnails and both Ski-Doo routes in a compact list. | [System Checklist](https://project-index-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) |
+| [Trail Map](https://trail-map-vintage-sled-revival-designs.joshuatobin.workers.dev/) opens each brand's routes in place. | [Status Board](https://trail-map-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) groups parts by status. |
+
+Both Sno-Jet designs include To assess, Needed, Ordered, Installed and Not needed. Search by name or part number, filter by system or status, and expand a part for its fitment notes and links. On the owner-enabled site, the two layouts share saved checklist statuses. Backups include the checklist and importing a backup from before the checklist preserves Sno-Jet statuses already recorded.
+
+Use `npm run ui:preview -- garage-doors dev --port 8794` for a local snapshot. The `garage-doors`, `project-index`, and `trail-map` editions also support `check` and `publish`. To promote, choose the homepage with `data-ui-edition` and set `data-snojet-edition` to `checklist` or `board` on production HTML. The Cloudflare previews are read only and show the published garage.
+
+### Animated door previews
+
+- **Roll-Up Bays** uses two overhead metal doors. Opening a door reveals the project photos and routes. [Homepage](https://roll-up-bays-vintage-sled-revival-designs.joshuatobin.workers.dev/) · [System Checklist](https://roll-up-bays-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet)
+- **Sliding Workshop** uses a pair of sliding doors for each wide opening. [Homepage](https://sliding-workshop-vintage-sled-revival-designs.joshuatobin.workers.dev/) · [Status Board](https://sliding-workshop-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet)
+
+The two previews read the published Ski-Doo photos and use the 1974 Sno-Jet factory brochure as a model reference. The older preview links above remain available for the checklist comparison. Run `npm run ui:preview -- roll-up-bays dev --port 8796` for a local preview and substitute `sliding-workshop` for the other design.
+
+Joshua selected the Roll-Up Bays layout with the doors removed. [Open Bays](https://open-bays-vintage-sled-revival-designs.joshuatobin.workers.dev/) is the read-only preview of that refinement. The [live homepage](https://vintage-sled-revival.joshuatobin.workers.dev/) pairs it with the Sno-Jet System Checklist.

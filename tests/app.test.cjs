@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches',yearbookEdition='',snojetEdition=''}={}){
  const elements=new Map(),handlers={},values=new Map();let published=saved?JSON.parse(JSON.stringify(saved)):null,revision=saved?1:0,redirect='';
  if(legacy)values.set('tobin-skidoo-garage-v1',JSON.stringify(legacy));
- function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)}});return elements.get(k)}
+ function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)},querySelectorAll(){return []}});return elements.get(k)}
  const request=async(url,options={})=>{
   if(url==='/api/session')return Response.json({canEdit:owner&&!preview,configured:!preview,preview});
   if(url==='/api/garage'&&options.method==='PUT'){
@@ -188,5 +188,74 @@ test('Sno-Jet opens directly and finds the confirmed carb kit and belt by number
  assert.doesNotMatch(app.el('#sno-parts-results').innerHTML,/DI 23398/);
  await app.fire('doc:change',{target:{id:'sno-system-filter',value:'spark',dataset:{}}});
  assert.match(app.el('#sno-parts-results').innerHTML,/No matching parts/);
+ assert.equal(app.published(),null);
+});
+
+test('Sno-Jet owner updates publish and reload independently of the Ski-Doo parts',async()=>{
+ const app=await boot(null,'#snojet',{snojetEdition:'checklist'});
+ const parts=JSON.parse(app.run('JSON.stringify(state.parts)'));
+ assert.match(app.el('#main').innerHTML,/data-sno-status="carb-kit"/);
+ assert.equal(app.run("snoJetPartStatus('carb-kit')"),'To assess');
+ for(const value of ['Needed','Ordered','Installed']){
+  await app.fire('doc:change',{target:{dataset:{snoStatus:'carb-kit'},value}});
+  await app.run('garageSync.flush()');
+  assert.equal(app.published().snoJetChecklist['carb-kit'],value);
+  assert.deepEqual(app.published().parts,parts);
+ }
+ const reloaded=await boot(app.published(),'#snojet',{snojetEdition:'board'});
+ assert.equal(reloaded.run("snoJetPartStatus('carb-kit')"),'Installed');
+ await reloaded.fire('doc:change',{target:{id:'sno-status-filter',dataset:{},value:'Installed'}});
+ assert.match(reloaded.el('#sno-check-results').innerHTML,/DI 23398/);
+ assert.doesNotMatch(reloaded.el('#sno-check-results').innerHTML,/Drive belt and spare/);
+ await reloaded.fire('doc:change',{target:{dataset:{snoStatus:'carb-kit'},value:'To assess'}});
+ await reloaded.run('garageSync.flush()');
+ assert.deepEqual(reloaded.published().snoJetChecklist,{});
+});
+
+test('preview homepages lead to separate Ski-Doo walkthroughs and a read-only Sno-Jet checklist',async()=>{
+ for(const [edition,snojetEdition] of [['garage-doors','checklist'],['project-index','checklist'],['trail-map','board'],['open-bays','checklist']]){
+  const app=await boot(null,'#overview',{edition,snojetEdition,preview:true,yearbookEdition:'sheets'});
+  const home=app.el('#main').innerHTML;
+  assert.match(home,new RegExp('garage-branch-home--'+edition));
+  assert.match(home,/Chassis year unconfirmed/);
+  assert.match(home,/data-guide-sled="early"/);
+  assert.match(home,/data-guide-sled="eight"/);
+  assert.match(home,/href="#snojet"/);
+  assert.match(home,/href="#paint"/);
+  if(edition==='open-bays'){
+   assert.match(home,/1974 factory brochure/);
+   assert.match(home,/IMG_6641\.jpg/);
+   assert.match(home,/IMG_1299\.jpg/);
+   assert.doesNotMatch(home,/data-bay-toggle|garage-door-panels|\s(?:inert|hidden)(?=[\s>])/);
+  }
+  app.run("render('snojet')");
+  assert.doesNotMatch(app.el('#main').innerHTML,/data-sno-status=/);
+  await app.fire('doc:change',{target:{dataset:{snoStatus:'carb-kit'},value:'Installed'}});
+  assert.equal(app.run("snoJetPartStatus('carb-kit')"),'To assess');
+  assert.equal(app.published(),null);
+ }
+});
+
+test('the new garage doors reveal each brand independently without editing the record',async()=>{
+ const app=await boot(null,'#overview',{edition:'roll-up-bays',snojetEdition:'checklist',preview:true});
+ const closed=app.el('#main').innerHTML;
+ assert.match(closed,/aria-label="Open Ski-Doo door"/);
+ assert.match(closed,/aria-label="Open Sno-Jet door"/);
+ assert.match(closed,/id="bay-skidoo-room" inert/);
+ const opening=app.el('.garage-bay-room'),actions=app.el('.garage-bay-actions');
+ const bay={toggleAttribute(){},querySelector:app.el};
+ app.el('h2').textContent='Ski-Doo';
+ const button={dataset:{bayToggle:'skidoo'},closest:()=>bay,firstElementChild:{},setAttribute(){}};
+ const click=()=>app.fire('doc:click',{target:{closest:selector=>selector==='button[data-bay-toggle]'?button:null}});
+ await click();
+ assert.equal(opening.inert,false);
+ assert.equal(actions.hidden,false);
+ assert.equal(button.firstElementChild.textContent,'Close door');
+ app.run("render('overview')");
+ assert.match(app.el('#main').innerHTML,/aria-label="Close Ski-Doo door"/);
+ assert.match(app.el('#main').innerHTML,/aria-label="Open Sno-Jet door"/);
+ await click();
+ assert.equal(opening.inert,true);
+ assert.equal(actions.hidden,true);
  assert.equal(app.published(),null);
 });

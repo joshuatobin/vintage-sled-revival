@@ -1,0 +1,258 @@
+.garage-branch-home:has(.garage-bays) .garage-branch-intro h1 {
+ font-size: clamp(44px, 6vw, 88px);
+}
+.garage-bays {
+ --bay-ink: #242822;
+ --bay-light: #fffdf7;
+ --bay-frame: #3a4138;
+ --bay-opening-height: clamp(198px, 22vw, 320px);
+ display: grid;
+ gap: 16px;
+ align-items: start;
+}
+.garage-bays--roll-up-bays, .garage-bays--open-bays {
+ grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+}
+.garage-bay {
+ position: relative;
+ min-width: 0;
+ border: 1px solid var(--bay-frame);
+ border-radius: 8px;
+ background: var(--bay-light);
+ box-shadow: 0 5px 0 #24282212;
+}
+.garage-bay-header {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 8px 14px;
+ padding: 14px clamp(12px, 2vw, 22px);
+ background: var(--bay-ink);
+ color: var(--bay-light);
+ border-radius: 7px 7px 0 0;
+}
+.garage-bay-header h2 {
+ font-size: clamp(31px, 4vw, 54px);
+ line-height: .98;
+}
+.garage-bay-header p {
+ margin-top: 5px;
+ font-size: 13px;
+ line-height: 1.25;
+ color: #e0e3d8;
+}
+.garage-bay-toggle {
+ flex: none;
+ display: inline-flex;
+ align-items: center;
+ gap: 10px;
+ min-height: 44px;
+ padding: 8px 12px;
+ border: 1px solid #73796d;
+ border-radius: 5px;
+ background: #343a31;
+ color: var(--bay-light);
+ font: 700 13px/1.15 var(--body);
+}
+.garage-bay:not([data-open]) .garage-bay-toggle::after {
+ content: "";
+ position: absolute;
+ z-index: 2;
+ inset: 0;
+}
+.garage-bay-toggle:hover {
+ border-color: var(--yellow);
+ background: var(--yellow);
+ color: var(--bay-ink);
+}
+.garage-branch-home .garage-bay-toggle:focus-visible {outline-color: var(--yellow);}
+.garage-bay-toggle i {
+ display: block;
+ width: 8px;
+ height: 8px;
+ border: solid currentColor;
+ border-width: 2px 0 0 2px;
+ transform: translateY(2px) rotate(45deg);
+}
+.garage-bay[data-open] .garage-bay-toggle i {transform: translateY(-2px) rotate(225deg);}
+.garage-bay-opening {
+ position: relative;
+ isolation: isolate;
+ overflow: hidden;
+ height: var(--bay-opening-height);
+ background: #29302a;
+ border: 7px solid var(--bay-frame);
+ border-bottom: 8px solid #485045;
+}
+.garage-bay-room {
+ position: absolute;
+ inset: 0;
+ display: grid;
+ grid-auto-flow: column;
+ grid-auto-columns: minmax(0, 1fr);
+ gap: 4px;
+}
+.garage-bay-photo {
+ position: relative;
+ margin: 0;
+ overflow: hidden;
+ background: #353b34;
+}
+.garage-bay-photo img {
+ display: block;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ object-position: 50% 60%;
+}
+.garage-bay-photo--brochure img {object-position: 60% 46%;}
+.garage-bay-photo figcaption {
+ position: absolute;
+ inset: auto 0 0;
+ padding: 18px 10px 8px;
+ background: linear-gradient(transparent, #171d17f0 80%);
+ color: white;
+ font: 650 clamp(17px, 2vw, 26px)/1 var(--heading);
+}
+.garage-bay-photo--brochure figcaption {font: 650 12px/1.2 var(--body);}
+.garage-bay-opening::after {
+ content: "";
+ position: absolute;
+ z-index: 1;
+ inset: 0 0 auto;
+ height: 4px;
+ background: #6a6b50;
+ box-shadow: 0 2px 10px #13181390;
+ pointer-events: none;
+ transition: background .3s, box-shadow .35s;
+}
+.garage-bay[data-open] .garage-bay-opening::after {
+ background: #f5d580;
+ box-shadow: 0 2px 13px #e3b956a8;
+}
+.garage-door-panels {
+ position: absolute;
+ inset: 0;
+ z-index: 1;
+ display: flex;
+ pointer-events: none;
+}
+.garage-door-panels span {display: block; position: relative;}
+.garage-bays--roll-up-bays .garage-door-panels span:first-child {
+ width: 100%;
+ border-bottom: 5px solid #282d26;
+ background:
+  linear-gradient(108deg, #fff5df22, transparent 40%, #10180b26),
+  repeating-linear-gradient(to bottom, #454e42 0 1px, #606b5c 2px 4px, #535e50 5px 10px, #4b5548 23px 30px, #2d362c 31px 33px);
+ box-shadow: 0 9px 21px #12181480;
+ transition: transform .72s cubic-bezier(.22,.74,.3,1);
+}
+.garage-bays--roll-up-bays .garage-bay--snojet .garage-door-panels span:first-child {
+ background:
+  linear-gradient(108deg, #fff5df24, transparent 42%, #191f1e33),
+  repeating-linear-gradient(to bottom, #515a56 0 1px, #797f78 2px 4px, #69736a 5px 10px, #5e695f 23px 30px, #424c43 31px 33px);
+}
+.garage-bays--roll-up-bays .garage-door-panels span:first-child::before {
+ content: "";
+ position: absolute;
+ left: 50%;
+ bottom: 15px;
+ width: 44px;
+ height: 12px;
+ transform: translateX(-50%);
+ border: 2px solid #747d71;
+ border-radius: 4px;
+ background: #242b24;
+ box-shadow: 0 2px 3px #161b1680;
+}
+.garage-bays--roll-up-bays .garage-bay[data-open] .garage-door-panels span:first-child {
+ transform: translateY(calc(-100% - 18px));
+}
+.garage-bays--sliding-workshop {--bay-opening-height: clamp(192px, 20vw, 280px);}
+.garage-bays--sliding-workshop .garage-bay--snojet .garage-bay-photo--brochure img {
+ object-fit: contain;
+ background: radial-gradient(ellipse at 50% 40%, #49554a, #282f29 75%);
+}
+.garage-bays--sliding-workshop .garage-door-panels span {
+ flex: 1 1 50%;
+ border: 5px solid #333c30;
+ border-bottom: 8px solid #3e483b;
+ background:
+  linear-gradient(110deg, #d3c48a18, transparent 42%, #141a1445),
+  repeating-linear-gradient(90deg, #525e4c 0 2px, #616a55 3px 28px, #545f4d 31px 39px, #3f4a3d 40px 42px);
+ box-shadow: inset 0 0 20px #12191438;
+ transition: transform .76s cubic-bezier(.22,.74,.3,1);
+}
+.garage-bays--sliding-workshop .garage-bay--snojet .garage-door-panels span {
+ background:
+  linear-gradient(110deg, #e9dbb212, transparent 42%, #141a1445),
+  repeating-linear-gradient(90deg, #686d57 0 2px, #7d8067 3px 28px, #6b715a 31px 39px, #535840 40px 42px);
+}
+.garage-bays--sliding-workshop .garage-door-panels span::before {
+ content: "";
+ position: absolute;
+ inset: 8px;
+ border: 2px solid #2b3329a8;
+ background: linear-gradient(to bottom right, transparent calc(50% - 6px), #3c4739 calc(50% - 5px), #4e5948 calc(50% + 4px), transparent calc(50% + 5px));
+}
+.garage-bays--sliding-workshop .garage-door-panels span:last-child::before {transform: scaleX(-1);}
+.garage-bays--sliding-workshop .garage-door-panels span::after {
+ content: "";
+ position: absolute;
+ top: 50%;
+ right: 16px;
+ width: 8px;
+ height: 41px;
+ translate: 0 -50%;
+ border: 1px solid #809078;
+ border-radius: 4px;
+ background: #293127;
+ box-shadow: 2px 2px 3px #22282080;
+}
+.garage-bays--sliding-workshop .garage-door-panels span:last-child::after {left: 16px; right: auto;}
+.garage-bays--sliding-workshop .garage-bay[data-open] .garage-door-panels span:first-child {transform: translateX(calc(-100% - 6px));}
+.garage-bays--sliding-workshop .garage-bay[data-open] .garage-door-panels span:last-child {transform: translateX(calc(100% + 6px));}
+.garage-bays--sliding-workshop .garage-bay-toggle i {transform: translateX(-1px) rotate(135deg);}
+.garage-bays--sliding-workshop .garage-bay[data-open] .garage-bay-toggle i {transform: translateX(1px) rotate(-45deg);}
+.garage-bay-actions {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 0 16px;
+ padding: 5px clamp(12px, 2vw, 21px) 6px;
+}
+.garage-bay-project-actions {padding-top: 7px;}
+.garage-bay-project-actions p {font-size: 13px; color: var(--branch-muted);}
+.garage-bay--snojet .garage-bay-actions {grid-template-columns: 1fr;}
+.garage-bay-snojet-info {
+ display: flex;
+ align-items: center;
+ flex-wrap: wrap;
+ gap: 6px 14px;
+ padding-block: 8px;
+}
+.garage-bay-snojet-info a:not(.garage-route-button) {
+ font-size: 13px;
+ padding-block: 10px;
+ text-underline-offset: 3px;
+}
+.garage-bays--open-bays .garage-bay {
+ border-color: var(--branch-line);
+ box-shadow: none;
+}
+.garage-bays--open-bays .garage-bay-header {
+ background: var(--branch-olive);
+ color: var(--branch-ink);
+}
+.garage-bays--open-bays .garage-bay-header p {color: var(--branch-muted);}
+.garage-bays--open-bays .garage-bay-opening {border: 0;}
+.garage-bays--open-bays .garage-bay-opening::after {content: none;}
+.garage-bays--open-bays .garage-bay-actions {padding-block: 7px 11px;}
+@media (max-width: 740px) {
+ .garage-bays {grid-template-columns: 1fr; --bay-opening-height: clamp(155px, 43vw, 265px);}
+ .garage-bay-header {padding-block: 9px;}
+ .garage-bay-photo figcaption {padding-inline: 8px;}
+ .garage-bay-opening {border-width: 5px;}
+}
+@media (prefers-reduced-motion: reduce) {
+ .garage-door-panels span, .garage-bay-opening::after {transition: none !important;}
+}

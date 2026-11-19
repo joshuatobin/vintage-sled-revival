@@ -24,11 +24,22 @@ try{
  const origin='https://garage.example.test';
  const read=await runtime.dispatchFetch(origin+'/api/garage');assert.equal(read.status,200);assert.deepEqual(await read.json(),{revision:0,state:null});
  const state=Records.initialState();state.logs[0].body='Runtime persistence test ❄';state.photos.push({id:'runtime-photo',sled:'early',title:'Detail',src:'data:image/jpeg;base64,'+'A'.repeat(300000)});
+ state.snoJetChecklist={'carb-kit':'Needed','drive-belt':'Installed'};
  const options={method:'PUT',headers:{Origin:origin,'Content-Type':'application/json','If-Match':'"0"',Cookie:`__Host-garage-session=${token}`},body:JSON.stringify(state)};
  const denied=await runtime.dispatchFetch(origin+'/api/garage',{...options,headers:{...options.headers,Cookie:''}});assert.equal(denied.status,401);
  const save=await runtime.dispatchFetch(origin+'/api/garage',options);assert.equal(save.status,200,await save.clone().text());assert.deepEqual(await save.json(),{revision:1});
  const record=await(await runtime.dispatchFetch(origin+'/api/garage')).json();assert.equal(record.state.logs[0].body,state.logs[0].body);assert.equal(record.state.photos.at(-1).src,state.photos.at(-1).src);
+ assert.deepEqual(record.state.snoJetChecklist,state.snoJetChecklist);
+ assert.deepEqual(record.state.parts,state.parts);
  const conflict=await runtime.dispatchFetch(origin+'/api/garage',options);assert.equal(conflict.status,409);
+ const newer={...options,headers:{...options.headers,'If-Match':'"1"'}};
+ const invalid=await runtime.dispatchFetch(origin+'/api/garage',{...newer,body:JSON.stringify({...state,snoJetChecklist:{'carb-kit':'invalid'}})});
+ assert.equal(invalid.status,400);
+ const oldClient={...state};delete oldClient.snoJetChecklist;
+ const oldSave=await runtime.dispatchFetch(origin+'/api/garage',{...newer,body:JSON.stringify(oldClient)});
+ assert.equal(oldSave.status,200,await oldSave.clone().text());
+ const reread=await(await runtime.dispatchFetch(origin+'/api/garage')).json();
+ assert.deepEqual(reread.state.snoJetChecklist,state.snoJetChecklist);
  const session=await(await runtime.dispatchFetch(origin+'/api/session',{headers:{Cookie:options.headers.Cookie}})).json();assert.equal(session.canEdit,true);assert.equal(Object.hasOwn(session,'token'),false);
- console.log('Worker runtime passed: public reads, signed owner writes, SQLite photo chunks, revision conflicts, and no token disclosure.');
+ console.log('Worker runtime passed: public reads, signed owner writes, SQLite photo chunks, Sno-Jet checklist validation and legacy saves, revision conflicts, and no token disclosure.');
 }finally{await runtime.dispose();}

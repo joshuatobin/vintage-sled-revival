@@ -67,7 +67,7 @@ Review against the brief: a new navigation system or new colors would discard wh
 
 UI previews use a dedicated read-only Worker. It fetches only the public published garage snapshot from the existing site and never forwards authentication headers, cookies or writes. No production database binding or owner-login secrets are attached to design previews.
 
-## Approved production direction
+## Original Showroom release
 
 Joshua selected Showroom on October 19, 2026. Use its photo-led homepage in production, with the existing owner sign-in and shared garage backend. Workbench remains available for comparison. Future UI changes must follow the two-preview workflow in `AGENTS.md`; promoting this already-selected design does not require another comparison round.
 
@@ -107,3 +107,45 @@ Give the Astro Jet its own navigation entry and let the two Ski-Doo projects inf
 **Workshop Plan** groups parts into First start and Before riding, with system cards and supplier links directly beneath the matching notes. **Parts Catalog** uses full-width rows, a system filter, and a separate supplier column on desktop. Stack the rows on phones. Both show the same sourcing data and distinguish product listings, supplier catalogs and technical references. The plan makes the order of work easier to see. The catalog helps when you already know which assembly you need.
 
 Use Workshop Plan for the November 18, 2026 production release. Both variants now support search by part name or number, a system filter, and direct jumps to parts and manuals. The confirmed HD-14A appears as a DIY rebuild with the parts diagram next to the kit. Separate measured fitment checks from the project’s working identification.
+
+## Sno-Jet checklist comparison
+
+Use warm paper (#f6f5ef), ink (#242822), yellow (#f5bd28), field green (#4f6645) and a quiet divider (#dedfd6). Keep Barlow Condensed for the project and system headings. Use DM Sans at reading size for parts, search, status and sourcing. Place the checklist first and move identification details into a disclosure. Keep fitment and source links one action from each part.
+
+```
+System Checklist                  Status Board
+title / progress counters         title / progress counters
+search and filters                search and filters
+Fuel & carburetor                 Needed | Ordered | Installed | To assess
+part · details · status           compact cards with system, details and status
+Spark & ignition                  Not needed below the main columns
+```
+
+The checklist makes it easy to scan several related parts during the same job. The board makes orders and open work easy to spot by grouping parts by status. On a phone, board sections stack and the status filter can isolate one stack. Both start the existing source entries at To assess, with a separate Not needed status for items ruled out by inspection. The owner can record status directly in either layout. Public viewing shows published progress. The Sno-Jet uses its own checklist field within the existing backup and publishing flow.
+
+## Garage homepage comparison
+
+Keep the approved navigation and palette. Use Barlow Condensed for the garage and brand names and DM Sans for the branch descriptions and actions. Base the layout on two clear branches and put the paint archive just below them. The early Ski-Doo shows its published chassis finding. Use published Ski-Doo project photos; style the Sno-Jet door with its model name until it has a public project photo.
+
+| Homepage | How it works | Sno-Jet preview |
+| --- | --- | --- |
+| Garage Doors | Two side-by-side entrances at desktop width. The Ski-Doo entrance uses a full-width project photo above the two sled links. The yellow Sno-Jet entrance leads straight to parts. | System Checklist |
+| Project Index | Brand names sit in a rail beside a compact, open list. Each Ski-Doo row has a real photo and links to its walkthrough and project file. | System Checklist |
+| Trail Map | Two large brand selectors open a single branch in place. The first choice leaves fewer links on screen. | Status Board |
+
+Garage Doors is the recommended starting point. Both brands are visible immediately and the project routes are already open. System Checklist keeps fitment work organized by assembly while the status filter provides a quick view of orders or installed parts.
+
+## Opening garage doors
+
+The static Garage Doors, Project Index, and Trail Map homepage layouts were declined. The new options make opening the doors the first interaction. Keep the ink and yellow of the established navigation, use light workshop paper around the facade, and build the doors out of muted olive and steel. Use Barlow Condensed for the site and two brand signs, and DM Sans for the controls and project text. The doors move once per click and the opening lights up as the photos come into view.
+
+| Homepage | Reveal | Sno-Jet route |
+| --- | --- | --- |
+| Roll-Up Bays | Two bays side by side at desktop width. Pull either overhead shutter up to see the projects and routes. | System Checklist |
+| Sliding Workshop | Two wide, stacked openings. Two workshop doors slide out toward the sides of each bay. | Status Board |
+
+The bays work independently and stack on phones. The entire closed door is clickable and has a visible keyboard-operable button. The closed bay hides its project routes from keyboard navigation and assistive technology. With reduced motion, the door reveals the projects immediately. The Ski-Doo bays use their published project photos. The Sno-Jet bay displays a clearly labeled 1974 factory brochure image from [Sled Magazine](https://sledmagazine.com/former-snowmobile-manufacturers-sno-jet/). That model reference stays separate from the published garage records.
+
+## Approved Open Bays release
+
+Joshua selected the first layout on November 18, 2026 and asked to remove the doors. Keep the side-by-side brand sections, original Ski-Doo photos and labeled Sno-Jet brochure. Use light headers and show each sled's actions immediately. The bays stack on mobile. Production uses `open-bays` for Home and `checklist` for Sno-Jet, with the existing owner sign-in. Status Board remains available in the Sliding Workshop preview.

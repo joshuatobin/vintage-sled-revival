@@ -36,6 +36,7 @@ export function normalizedState(value) {
   // Retain restoration records, never client-supplied authentication fields.
   const state = Records.mergeBuiltInPhotos({ schema: 1, parts: value.parts, logs: value.logs, photos: value.photos });
   state.guides = Guide.migrate(value.guides, state);
+  if (Object.hasOwn(value, 'snoJetChecklist')) state.snoJetChecklist = value.snoJetChecklist;
   return state;
 }
 
@@ -67,8 +68,6 @@ export class GarageStore {
     try { incoming = normalizedState(await boundedJSON(request)); }
     catch (error) { if (error instanceof Response) return error; throw error; }
     if (!incoming) return json({ error: 'This is not a valid garage record.' }, 400);
-    const bytes = new TextEncoder().encode(JSON.stringify(incoming));
-    if (bytes.byteLength > MAX_BYTES) return json({ error: 'Garage record exceeds 12 MB. Export a backup before removing photos.' }, 413);
     const result = await this.storage.transaction(async transaction => {
       const previous = await readSnapshot(transaction);
       if (previous.revision !== Number(match[1])) return { conflict: true, revision: previous.revision };
@@ -79,6 +78,13 @@ export class GarageStore {
         const errors = Guide.purchaseIssues(incoming, part, 'Ordered');
         if (errors.length) return { error: errors[0] };
       }
+      // Snapshots written by older clients or restored from old backups omit this field.
+      const nextState = {...incoming};
+      if (!Object.hasOwn(nextState, 'snoJetChecklist') && previous.state?.snoJetChecklist) {
+        nextState.snoJetChecklist = previous.state.snoJetChecklist;
+      }
+      const bytes = new TextEncoder().encode(JSON.stringify(nextState));
+      if (bytes.byteLength > MAX_BYTES) return { tooLarge: true };
       const count = Math.ceil(bytes.byteLength / CHUNK_BYTES);
       const entries = { meta: { revision: previous.revision + 1, chunks: count } };
       for (let i = 0; i < count; i++) entries[`state:${i}`] = bytes.slice(i * CHUNK_BYTES, (i + 1) * CHUNK_BYTES);
@@ -89,6 +95,7 @@ export class GarageStore {
       return { revision: previous.revision + 1 };
     });
     if (result.conflict) return json({ error: 'Another session updated the garage. Your draft is preserved; reload the published record before replacing it.', revision: result.revision }, 409);
+    if (result.tooLarge) return json({ error: 'Garage record exceeds 12 MB, including photos.' }, 413);
     if (result.error) return json({ error: result.error }, 422);
     return json(result);
   }

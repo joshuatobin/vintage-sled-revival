@@ -1,6 +1,6 @@
 # Vintage Sled Revival
 
-Read `README.md` and `DESIGN.md`, then inspect the existing app before changing it. Work in this local checkout. Showroom is the approved production homepage; Swatchbook is the approved Paint codes & colors layout, with Year Sheets for the 1959–1979 year browser. Schematic sled artwork was rejected; use original, year-supported photographs when available.
+Read `README.md` and `DESIGN.md`, then inspect the existing app before changing it. Work in this local checkout. Open Bays is the approved production homepage. The Sno-Jet uses System Checklist. Swatchbook is the approved Paint codes & colors layout, with Year Sheets for the 1959–1979 year browser. Schematic sled artwork was rejected; use original, year-supported photographs when available.
 
 ## Required UI preview workflow
 
