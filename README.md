@@ -195,3 +195,14 @@ Publish comparison previews with `npm run ui:preview -- paint-yearbook publish` 
 `dist/yearbook-data.js` records the source-linked early-year references; `dist/yearbook-ui.js` and `dist/yearbook.css` provide the browsing interface. Selecting a year or decade does not edit garage records. Display colors are approximate, not measured paint matches or mixing formulas. The historical recipe ranges do not prove paint assignment to the representative model; 1964 remains disputed. [Research notes](research/yearbook-references.md) record the source pages and limits.
 
 Every 1960–1969 year sheet also links its original factory sales brochure in the Musée de l’ingéniosité J. Armand Bombardier archive. The 1962 brochure is English; the others are French. These provide period appearance references alongside the paint evidence. Original documents remain at the museum; no archive images are republished or recolored.
+
+## 1974 Sno-Jet Astro Jet 340
+
+The [live Sno-Jet Workshop Plan](https://vintage-sled-revival.joshuatobin.workers.dev/#snojet) has its own navigation entry. Search for parts or numbers, filter by system, or browse the plan in order. Product listings and catalogs provide purchase leads, with a fitment check beside each entry. The two read-only previews share the same data.
+
+- [Workshop Plan](https://snojet-plan-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) groups systems by first start and before riding.
+- [Parts Catalog](https://snojet-catalog-vintage-sled-revival-designs.joshuatobin.workers.dev/#snojet) lays out parts and supplier links in rows with a system filter.
+
+The working identification is Astro Jet 340 with a Yamaha twin. Joshua confirmed the installed Tillotson HD-14A and opted for a DIY rebuild. The factory parts diagram and DI 23398 kit are linked beside the carb. The exact engine tag, stator and clutch setup remain fitment checks. The chassis plate shows a 1973 build date and a faint model code. Use the model code to check the model year. The section is a separate parts reference and uses no purchase tracker or garage storage.
+
+Run `npm run ui:preview -- snojet-plan dev --port 8794` locally, or use `snojet-catalog` for the other layout. The same editions support `check` and `publish`. The production HTML uses `data-snojet-edition="plan"`.

@@ -56,6 +56,7 @@ test('only a signed, unexpired token for the configured issuer, audience and own
 test('owner login returns only to a garage view, never an external redirect',async()=>{
  const app=await fixture(),headers={'Cf-Access-Jwt-Assertion':app.ownerToken};
  const safe=await app.request('/admin/login?return='+encodeURIComponent('/#guide'),{headers});assert.equal(safe.status,303);assert.equal(safe.headers.get('Location'),origin+'/#guide');
+ const snoJet=await app.request('/admin/login?return='+encodeURIComponent('/#snojet'),{headers});assert.equal(snoJet.headers.get('Location'),origin+'/#snojet');
  assert.match(safe.headers.get('Set-Cookie'),/__Host-garage-session=.*; Path=\/; Secure; HttpOnly; SameSite=Lax/);
  const ownCookie=safe.headers.get('Set-Cookie').split(';')[0];assert.equal((await(await app.request('/api/session',{headers:{Cookie:ownCookie}})).json()).canEdit,true);
  const logout=await app.request('/api/logout',{method:'POST',headers:{Origin:origin}});assert.equal(logout.status,200);assert.match(logout.headers.get('Set-Cookie'),/Max-Age=0/);

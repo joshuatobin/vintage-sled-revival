@@ -113,7 +113,7 @@ export function createWorker(authenticate = ownerIdentity) {
           const target = url.searchParams.get('return');
           const lifetime = Math.max(0, Math.min(8*60*60, owner.expires-Math.floor(Date.now()/1000)));
           return new Response(null, { status: 303, headers: {
-            Location: new URL(/^\/#(overview|guide|sleds|parts|journal|archive)$/.test(target || '') ? target : '/', url.origin).href,
+            Location: new URL(/^\/#(overview|guide|sleds|parts|journal|archive|snojet)$/.test(target || '') ? target : '/', url.origin).href,
             'Cache-Control': 'no-store',
             'Set-Cookie': `__Host-garage-session=${owner.token}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=${lifetime}`,
           } });

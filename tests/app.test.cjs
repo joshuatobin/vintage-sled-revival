@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches',yearbookEdition=''}={}){
+async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition='classic',preview=false,paintEdition='swatches',yearbookEdition='',snojetEdition=''}={}){
  const elements=new Map(),handlers={},values=new Map();let published=saved?JSON.parse(JSON.stringify(saved)):null,revision=saved?1:0,redirect='';
  if(legacy)values.set('tobin-skidoo-garage-v1',JSON.stringify(legacy));
  function el(k){if(!elements.has(k))elements.set(k,{innerHTML:'',textContent:'',value:'',open:false,dataset:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},addEventListener(e,f){(handlers[k+':'+e]??=[]).push(f)},showModal(){this.open=true},close(){this.open=false},focus(){},querySelector(q){return el(k+' '+q)}});return elements.get(k)}
@@ -13,8 +13,8 @@ async function boot(saved,hash='',{owner=true,legacy=null,failRead=false,edition
   if(failRead)return new Response('Offline',{status:503});
   return Response.json({revision,state:published});
  };
- const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview),paintEdition,yearbookEdition}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
- for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','paint-data.js','yearbook-data.js','yearbook-ui.js','paint-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
+ const context={console,Intl,Date,Math,JSON,Number,String,Array,Object,Error,Set,Map,URL,Blob,Response,TextEncoder,fetch:request,setTimeout:()=>0,clearTimeout(){},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},location:{hash,assign:value=>redirect=value},window:{addEventListener(){},scrollTo(){}},document:{documentElement:{dataset:{uiEdition:edition,uiPreview:String(preview),paintEdition,yearbookEdition,snojetEdition}},querySelector:el,querySelectorAll:()=>[],addEventListener(e,f){(handlers['doc:'+e]??=[]).push(f)},createElement:()=>({click(){}})},FormData:class extends Map{constructor(form){super(Object.entries(form.values||{}))}},crypto:{randomUUID:()=>Math.random().toString(36)},confirm:()=>true};vm.createContext(context);
+ for(const name of ['records.js','sync.js','guide.js','guide-ui.js','home-designs.js','paint-data.js','yearbook-data.js','yearbook-ui.js','paint-ui.js','snojet-data.js','snojet-ui.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..','dist',name),'utf8'),context,{filename:name});
  await context.garageReady;
  return{run:s=>vm.runInContext(s,context),el,storage:()=>JSON.parse(values.get('tobin-skidoo-garage-draft-v2')||'null')?.state||published,local:key=>values.get(key),published:()=>published,redirect:()=>redirect,async fire(key,event){for(const handler of handlers[key]||[])await handler(event)}};
 }
@@ -175,4 +175,18 @@ test('early-year references exclude rejected artwork and later decades without e
   if(yearbookEdition==='gallery'){const button={dataset:{yearbookYear:'1964'},hasAttribute:()=>false,matches:()=>false};await app.fire('doc:click',{target:{closest:()=>button}});assert.equal(app.el('#yearbook-dialog').open,true);assert(app.el('#yearbook-dialog').innerHTML.includes('Year-range conflict'));}
   assert.equal(app.run('JSON.stringify(state)'),before);assert.equal(app.published(),null);assert.equal(app.run("recordedChassis('early')"),null);
  }
+});
+
+test('Sno-Jet opens directly and finds the confirmed carb kit and belt by number',async()=>{
+ const app=await boot(null,'#snojet',{snojetEdition:'plan',owner:false});
+ assert.match(app.el('#main').innerHTML,/Astro Jet 340/);
+ assert.match(app.el('#main').innerHTML,/DI 23398/);
+ assert.equal(app.el('nav [data-view="snojet"]').hidden,false);
+ await app.fire('doc:input',{target:{id:'sno-parts-query',value:'HP-3009'}});
+ assert.match(app.el('#sno-parts-results').innerHTML,/1 match/);
+ assert.match(app.el('#sno-parts-results').innerHTML,/Drive belt and spare/);
+ assert.doesNotMatch(app.el('#sno-parts-results').innerHTML,/DI 23398/);
+ await app.fire('doc:change',{target:{id:'sno-system-filter',value:'spark',dataset:{}}});
+ assert.match(app.el('#sno-parts-results').innerHTML,/No matching parts/);
+ assert.equal(app.published(),null);
 });

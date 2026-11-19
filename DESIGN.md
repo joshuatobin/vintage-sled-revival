@@ -99,3 +99,11 @@ Joshua rejected the schematic sled illustrations: they did not resemble the orig
 Retain the approved Showroom homepage, Swatchbook library, navigation, Barlow Condensed / DM Sans typography and yellow, olive, ink and paper palette. The additional content is a paint reference browser with illustrative swatches, model references, historical recipes and source links. Open paint-assignment questions and the 1964 disagreement stay visible. No project identity or saved progress changes.
 
 Keep two alternatives on the dedicated preview Worker: **Year sheets** pairs one year with a larger swatch and sources; **Year gallery** shows compact swatch cards with 1950s/1960s/1970s filters and a detail dialog. Joshua selected **Year Sheets** on October 21, 2026. Promote that selected edition alongside Showroom and Swatchbook; no new comparison round is required for this promotion. Actual photographs can be added later when their model, year and provenance are established; never recolor a documentary photograph to imply a verified paint match.
+
+## Sno-Jet parts previews
+
+Give the Astro Jet its own navigation entry and let the two Ski-Doo projects inform only the visual style. Keep the garage’s Barlow Condensed and DM Sans, with ink `#242822`, workshop paper `#f6f5ef`, sled yellow `#f5bd28`, field green `#4f6645` and a pale green identification panel. Use the HD14A marking from the supplied carb photo to explain the first parts match. The previews show the finding and use no supplied photos.
+
+**Workshop Plan** groups parts into First start and Before riding, with system cards and supplier links directly beneath the matching notes. **Parts Catalog** uses full-width rows, a system filter, and a separate supplier column on desktop. Stack the rows on phones. Both show the same sourcing data and distinguish product listings, supplier catalogs and technical references. The plan makes the order of work easier to see. The catalog helps when you already know which assembly you need.
+
+Use Workshop Plan for the November 18, 2026 production release. Both variants now support search by part name or number, a system filter, and direct jumps to parts and manuals. The confirmed HD-14A appears as a DIY rebuild with the parts diagram next to the kit. Separate measured fitment checks from the project’s working identification.
